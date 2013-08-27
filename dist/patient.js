@@ -4,8 +4,14 @@
   mongoose = require('mongoose');
 
   patientSchema = new mongoose.Schema({
-    mrn: String,
-    name: String
+    mrn: {
+      type: 'string',
+      required: true
+    },
+    name: {
+      type: 'string',
+      required: true
+    }
   });
 
   patientSchema.set('strict', false);

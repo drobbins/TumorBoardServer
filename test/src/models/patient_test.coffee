@@ -1,5 +1,6 @@
 Patient = require '../dist/patient'
 Help = require './help'
+should = require 'should'
 
 describe 'Patient Model', () ->
 
@@ -12,6 +13,7 @@ describe 'Patient Model', () ->
             name: 'TestMcPatient'
         Patient.create testPatient,
             (err, patient) ->
+                should.not.exist err
                 patient.should.have.property 'name',testPatient.name
                 patient.should.have.property 'mrn', testPatient.mrn
                 done()
@@ -23,8 +25,25 @@ describe 'Patient Model', () ->
             age: '98'
         Patient.create testPatient,
             (err, patient) ->
+                should.not.exist err
                 patient = patient.toObject() # Convert from a mongoose model to just an object
                 patient.should.have.property 'name',testPatient.name
                 patient.should.have.property 'mrn', testPatient.mrn
                 patient.should.have.property 'age', testPatient.age
+                done()
+
+    it 'should require name', (done) ->
+        Patient.create
+            mrn: '1234'
+            (err, patient) ->
+                should.exist err
+                err.errors.name.type.should.equal 'required'
+                done()
+
+    it 'should require mrn', (done) ->
+        Patient.create
+            name: '1234'
+            (err, patient) ->
+                should.exist err
+                err.errors.mrn.type.should.equal 'required'
                 done()
