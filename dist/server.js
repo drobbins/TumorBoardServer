@@ -1,8 +1,12 @@
 (function() {
-  var app, express, http,
+  var app, baucis, express, http, mongoose,
     __slice = [].slice;
 
   express = require('express');
+
+  mongoose = require('mongoose');
+
+  baucis = require('baucis');
 
   http = require('http');
 
@@ -11,6 +15,16 @@
   app.get("/hello", function(req, res) {
     return res.end("Hello World");
   });
+
+  require('./patient');
+
+  baucis.rest({
+    singular: 'Patient'
+  });
+
+  app.use('/api/v1', baucis({
+    swagger: true
+  }));
 
   app.set('__options', {});
 
@@ -52,6 +66,29 @@
       return typeof callback === "function" ? callback() : void 0;
     } else {
       return app.get('__server').close(callback);
+    }
+  };
+
+  app.clearData = function(callback) {
+    var done, model, models, _i, _len, _results;
+    models = mongoose.modelNames();
+    done = 0;
+    if (models.length === 0) {
+      return typeof callback === "function" ? callback() : void 0;
+    } else {
+      _results = [];
+      for (_i = 0, _len = models.length; _i < _len; _i++) {
+        model = models[_i];
+        _results.push(mongoose.model(model).remove({}, function(err) {
+          done++;
+          if (err) {
+            return typeof callback === "function" ? callback(err) : void 0;
+          } else if (done >= models.length) {
+            return typeof callback === "function" ? callback() : void 0;
+          }
+        }));
+      }
+      return _results;
     }
   };
 

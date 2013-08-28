@@ -1,10 +1,17 @@
 express = require 'express'
+mongoose = require 'mongoose'
+baucis = require 'baucis'
 http = require 'http'
 
 module.exports = app = express()
 
-# Routes
+# Static Routes
 app.get "/hello", (req, res) -> res.end "Hello World"
+
+# Model Routes
+require './patient'
+baucis.rest singular: 'Patient'
+app.use '/api/v1', baucis swagger:true
 
 # Testability Helpers
 app.set '__options', {}
@@ -32,3 +39,13 @@ app.close = (callback) ->
         callback?()
     else
         app.get('__server').close callback
+
+app.clearData = (callback) ->
+    models = mongoose.modelNames()
+    done = 0
+    if models.length is 0 then callback?() else
+        for model in models
+            mongoose.model(model).remove {}, (err) ->
+                done++
+                if err then callback?(err)
+                else if done >= models.length then callback?()
