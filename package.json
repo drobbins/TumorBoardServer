@@ -20,6 +20,7 @@
     "baucis": "~0.6.11",
     "mongoose": "~3.6.18",
     "express": "~3.3.5",
-    "request": "~2.27.0"
+    "request": "~2.27.0",
+    "corser": "~1.2.0"
   }
 }

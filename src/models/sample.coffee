@@ -2,10 +2,10 @@ mongoose = require 'mongoose'
 
 sampleSchema = new mongoose.Schema
     type:
-        type: 'String'
+        type: String
         required: 'true'
     value:
-        type: 'String'
+        type: String
     patient:
         type: 'ObjectId'
         ref: 'Patient'

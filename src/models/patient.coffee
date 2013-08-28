@@ -2,10 +2,10 @@ mongoose = require 'mongoose'
 
 patientSchema = new mongoose.Schema
     mrn:
-        type: 'string'
+        type: String
         required: true
     name:
-        type: 'string'
+        type: String
         required: true
 
 patientSchema.set 'strict', false

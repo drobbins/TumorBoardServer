@@ -1,5 +1,5 @@
 (function() {
-  var app, baucis, express, http, mongoose,
+  var app, baucis, corser, express, http, mongoose,
     __slice = [].slice;
 
   express = require('express');
@@ -10,10 +10,19 @@
 
   http = require('http');
 
+  corser = require('corser');
+
   module.exports = app = express();
+
+  app.use(corser.create());
 
   app.get("/hello", function(req, res) {
     return res.end("Hello World");
+  });
+
+  app.options('*', function(req, res) {
+    res.writeHead(204);
+    return res.end;
   });
 
   require('./patient');

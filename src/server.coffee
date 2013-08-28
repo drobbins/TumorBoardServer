@@ -2,11 +2,20 @@ express = require 'express'
 mongoose = require 'mongoose'
 baucis = require 'baucis'
 http = require 'http'
+corser = require 'corser'
 
 module.exports = app = express()
 
+# Middleware
+app.use corser.create()
+
+
 # Static Routes
 app.get "/hello", (req, res) -> res.end "Hello World"
+app.options '*', (req, res) ->
+    # End Corser CORS preflight requests
+    res.writeHead 204
+    res.end
 
 # Model Routes
 require './patient'
