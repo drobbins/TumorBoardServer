@@ -31,6 +31,12 @@
     singular: 'Patient'
   });
 
+  require('./sample');
+
+  baucis.rest({
+    singular: 'Sample'
+  });
+
   app.use('/api/v1', baucis({
     swagger: true
   }));

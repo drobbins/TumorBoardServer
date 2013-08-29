@@ -20,6 +20,8 @@ app.options '*', (req, res) ->
 # Model Routes
 require './patient'
 baucis.rest singular: 'Patient'
+require './sample'
+baucis.rest singular: 'Sample'
 app.use '/api/v1', baucis swagger:true
 
 # Testability Helpers
