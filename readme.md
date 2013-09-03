@@ -1,3 +1,3 @@
-## Development Packages
+# Tumor Board Server
 
-`npm install --save-dev grunt grunt-contrib-coffee mocha should grunt-cafe-mocha grunt-contrib-watch`
+A simple restful server for mediating patient, sample, and observation data between the browser and MongoDB
