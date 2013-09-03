@@ -11,6 +11,10 @@
   }).options('mongourl', {
     "default": 'mongodb://localhost/tb',
     describe: 'MongoDB connection string'
+  }).check(function(args) {
+    if (args.h || args.help) {
+      throw "Example: node dist/main.js --port 8181 --mongourl mongodb://localhost/mydb";
+    }
   }).argv;
 
   server.config(argv);
