@@ -7,7 +7,7 @@ sampleSchema = new mongoose.Schema
     value:
         type: String
     patient:
-        type: 'ObjectId'
+        type: mongoose.Schema.Types.ObjectId
         ref: 'Patient'
 
 sampleSchema.set 'strict', false

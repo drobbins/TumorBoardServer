@@ -12,7 +12,7 @@
       type: String
     },
     patient: {
-      type: 'ObjectId',
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Patient'
     }
   });

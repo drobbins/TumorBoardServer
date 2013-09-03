@@ -8,7 +8,7 @@
       type: String
     },
     sample: {
-      type: 'ObjectId',
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Sample'
     }
   });

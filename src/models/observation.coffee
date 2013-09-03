@@ -4,7 +4,7 @@ observationSchema = new mongoose.Schema
     comment:
         type: String
     sample:
-        type: 'ObjectId'
+        type: mongoose.Schema.Types.ObjectId
         ref: 'Sample'
 
 observationSchema.set 'strict', false
