@@ -12,11 +12,25 @@ describe 'Observation Model', () ->
             Observation.remove {}, done
 
     it 'should allow creation', (done) ->
-        saveOneObservation (err, observation) ->
+        saveOneObservation (err, things) ->
             should.not.exist err
-            observation.should.have.property 'sample'
-            observation.should.have.property 'comment'
+            things.observation.should.have.property 'sample'
+            things.observation.should.have.property 'comment'
             done()
+
+    it 'should allow finding by sample', (done) ->
+        saveOneObservation (err, things) ->
+            Observation.find
+                sample: things.sample._id
+                (err, observations) ->
+                    should.not.exist err
+                    observation = observations[0]
+                    #observation.should.eql things.observation
+                    observation._id.should.eql things.observation._id
+                    observation.comment.should.eql things.observation.comment
+                    done()
+
+    xit 'should allow finding by patient'
 
 # Helper Functions
 saveOneObservation = (callback) ->
@@ -34,4 +48,8 @@ saveOneObservation = (callback) ->
             sample.patient = patient._id
             Sample.create sample, (err, sample) ->
                 observation.sample = sample._id
-                Observation.create observation, callback
+                Observation.create observation, (err, observation) ->
+                    callback err,
+                        sample: sample
+                        observation: observation
+                        patient: patient

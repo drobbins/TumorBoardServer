@@ -20,14 +20,29 @@
         return Observation.remove({}, done);
       });
     });
-    return it('should allow creation', function(done) {
-      return saveOneObservation(function(err, observation) {
+    it('should allow creation', function(done) {
+      return saveOneObservation(function(err, things) {
         should.not.exist(err);
-        observation.should.have.property('sample');
-        observation.should.have.property('comment');
+        things.observation.should.have.property('sample');
+        things.observation.should.have.property('comment');
         return done();
       });
     });
+    it('should allow finding by sample', function(done) {
+      return saveOneObservation(function(err, things) {
+        return Observation.find({
+          sample: things.sample._id
+        }, function(err, observations) {
+          var observation;
+          should.not.exist(err);
+          observation = observations[0];
+          observation._id.should.eql(things.observation._id);
+          observation.comment.should.eql(things.observation.comment);
+          return done();
+        });
+      });
+    });
+    return xit('should allow finding by patient');
   });
 
   saveOneObservation = function(callback) {
@@ -49,7 +64,13 @@
       sample.patient = patient._id;
       return Sample.create(sample, function(err, sample) {
         observation.sample = sample._id;
-        return Observation.create(observation, callback);
+        return Observation.create(observation, function(err, observation) {
+          return callback(err, {
+            sample: sample,
+            observation: observation,
+            patient: patient
+          });
+        });
       });
     });
   };
