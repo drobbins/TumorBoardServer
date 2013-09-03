@@ -33,3 +33,5 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'default', ['coffee', 'cafemocha']
 
+    grunt.registerTask 'test', ['coffee', 'cafemocha', 'watch']
+
