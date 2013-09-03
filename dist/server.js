@@ -73,6 +73,11 @@
   app.listen = function() {
     var args, server;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    switch (mongoose.connection.readyState) {
+      case 0:
+      case 3:
+        mongoose.connect((app.get('mongoUrl')) || 'mongodb://localhost/tb');
+    }
     server = http.createServer(app);
     app.set('__server', server);
     if (args.length === 0) {
@@ -83,6 +88,7 @@
   };
 
   app.close = function(callback) {
+    mongoose.disconnect();
     if (app.get('__server').address() === null) {
       return typeof callback === "function" ? callback() : void 0;
     } else {

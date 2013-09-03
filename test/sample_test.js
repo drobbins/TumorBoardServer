@@ -10,6 +10,12 @@
   should = require('should');
 
   describe('Sample Model', function() {
+    before(function(done) {
+      return Help.startMongo(done);
+    });
+    after(function(done) {
+      return Help.stopMongo(done);
+    });
     afterEach(function(done) {
       return Sample.remove({}, function(err) {
         if (err) {

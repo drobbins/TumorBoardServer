@@ -8,6 +8,12 @@
   should = require('should');
 
   describe('Patient Model', function() {
+    before(function(done) {
+      return Help.startMongo(done);
+    });
+    after(function(done) {
+      return Help.stopMongo(done);
+    });
     afterEach(function(done) {
       return Patient.remove({}, done);
     });

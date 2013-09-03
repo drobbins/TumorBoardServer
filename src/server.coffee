@@ -40,6 +40,11 @@ app.clear = () ->
         (app.get '__options')[option] = false
 
 app.listen = (args...) ->
+  # Initalize MongoDB Connection
+    switch mongoose.connection.readyState
+        when 0, 3 then mongoose.connect (app.get 'mongoUrl') or 'mongodb://localhost/tb'
+
+  # Initialize HTTP Server
     server = http.createServer app
     app.set '__server', server
     if args.length is 0
@@ -48,6 +53,7 @@ app.listen = (args...) ->
         server.listen.apply(server, args)
 
 app.close = (callback) ->
+    mongoose.disconnect()
     if app.get('__server').address() is null
         callback?()
     else

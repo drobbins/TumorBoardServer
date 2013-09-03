@@ -7,8 +7,6 @@
 
   mongoUrl = 'mongodb://localhost/tb';
 
-  mongoose.connect(mongoUrl);
-
   module.exports = {
     init: function(done) {
       server.config({
@@ -21,7 +19,13 @@
     deinit: function(done) {
       return server.close(done);
     },
-    url: "http://localhost:8888/api/v1"
+    url: "http://localhost:8888/api/v1",
+    startMongo: function(callback) {
+      return mongoose.connect(mongoUrl, callback);
+    },
+    stopMongo: function(callback) {
+      return mongoose.disconnect(callback);
+    }
   };
 
 }).call(this);

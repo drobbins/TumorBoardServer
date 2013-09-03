@@ -6,6 +6,12 @@ should = require 'should'
 
 describe 'Observation Model', () ->
 
+    before (done) ->
+        Help.startMongo done
+
+    after (done) ->
+        Help.stopMongo done
+
     afterEach (done) ->
         Sample.remove {}, (err) ->
             done err if err

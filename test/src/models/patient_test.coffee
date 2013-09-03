@@ -4,6 +4,12 @@ should = require 'should'
 
 describe 'Patient Model', () ->
 
+    before (done) ->
+        Help.startMongo done
+
+    after (done) ->
+        Help.stopMongo done
+
     afterEach (done) ->
         Patient.remove {}, done # Empty the patient collection after each test.
 

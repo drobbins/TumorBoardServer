@@ -2,7 +2,6 @@ mongoose = require 'mongoose'
 server = require '../dist/server'
 
 mongoUrl = 'mongodb://localhost/tb'
-mongoose.connect mongoUrl
 
 module.exports =
     init: (done) ->
@@ -14,4 +13,8 @@ module.exports =
     deinit: (done) ->
         server.close done
     url: "http://localhost:8888/api/v1"
+    startMongo: (callback) ->
+        mongoose.connect mongoUrl, callback
+    stopMongo: (callback) ->
+        mongoose.disconnect callback
 
