@@ -13,4 +13,3 @@ sampleSchema = new mongoose.Schema
 sampleSchema.set 'strict', false
 
 module.exports = mongoose.model 'Sample', sampleSchema
-

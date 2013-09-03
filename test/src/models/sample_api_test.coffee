@@ -31,8 +31,8 @@ describe 'Sample API', () ->
             age: 19
 
         sample =
-                type: 'Foundation Medicine Report'
-                file: 'AKD934-FMR.pdf'
+            type: 'Foundation Medicine Report'
+            file: 'AKD934-FMR.pdf'
 
         before (done) ->
             request
