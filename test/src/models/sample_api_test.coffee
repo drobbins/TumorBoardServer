@@ -40,9 +40,9 @@ describe 'Sample API', () ->
                 method: 'POST'
                 json: [patient, patient2, patient3]
                 (err, resp, body) ->
-                    if err then callback?(err) else
-                        [patient, patient2, patient3] = body
-                        done()
+                    done err if err
+                    [patient, patient2, patient3] = body
+                    done()
 
         it 'Create', (done) ->
             sample.patient = patient3._id

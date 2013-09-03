@@ -45,11 +45,10 @@
           json: [patient, patient2, patient3]
         }, function(err, resp, body) {
           if (err) {
-            return typeof callback === "function" ? callback(err) : void 0;
-          } else {
-            patient = body[0], patient2 = body[1], patient3 = body[2];
-            return done();
+            done(err);
           }
+          patient = body[0], patient2 = body[1], patient3 = body[2];
+          return done();
         });
       });
       it('Create', function(done) {
