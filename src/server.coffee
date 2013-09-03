@@ -22,6 +22,8 @@ require './patient'
 baucis.rest singular: 'Patient'
 require './sample'
 baucis.rest singular: 'Sample'
+require './observation'
+baucis.rest singular: 'Observation'
 app.use '/api/v1', baucis swagger:true
 
 # Testability Helpers

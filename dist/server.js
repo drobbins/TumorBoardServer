@@ -37,6 +37,12 @@
     singular: 'Sample'
   });
 
+  require('./observation');
+
+  baucis.rest({
+    singular: 'Observation'
+  });
+
   app.use('/api/v1', baucis({
     swagger: true
   }));
