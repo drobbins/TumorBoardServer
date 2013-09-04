@@ -15,7 +15,7 @@ app.get "/hello", (req, res) -> res.end "Hello World"
 app.options '*', (req, res) ->
     # End Corser CORS preflight requests
     res.writeHead 204
-    res.end
+    res.end()
 
 # Model Routes
 require './patient'

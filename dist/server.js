@@ -22,7 +22,7 @@
 
   app.options('*', function(req, res) {
     res.writeHead(204);
-    return res.end;
+    return res.end();
   });
 
   require('./patient');
