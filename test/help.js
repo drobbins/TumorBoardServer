@@ -5,7 +5,7 @@
 
   server = require('../dist/server');
 
-  mongoUrl = 'mongodb://localhost/tb';
+  mongoUrl = 'mongodb://tb:tb@127.0.0.1/tboard_test';
 
   module.exports = {
     init: function(done) {
