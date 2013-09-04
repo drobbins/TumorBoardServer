@@ -8,12 +8,12 @@
   argv = optimist.options('port', {
     "default": 8888,
     describe: 'Port to listen on'
-  }).options('mongourl', {
+  }).options('mongoUrl', {
     "default": 'mongodb://localhost/tb',
     describe: 'MongoDB connection string'
   }).check(function(args) {
     if (args.h || args.help) {
-      throw "Example: node dist/main.js --port 8181 --mongourl mongodb://localhost/mydb";
+      throw "Example: node dist/main.js --port 8181 --mongoUrl mongodb://localhost/mydb";
     }
   }).argv;
 
