@@ -17,12 +17,12 @@
   app.use(corser.create());
 
   app.get("/hello", function(req, res) {
-    return res.end("Hello World");
+    res.end("Hello World");
   });
 
   app.options('*', function(req, res) {
     res.writeHead(204);
-    return res.end;
+    res.end();
   });
 
   require('./patient');
