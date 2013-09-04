@@ -7,7 +7,8 @@ corser = require 'corser'
 module.exports = app = express()
 
 # Middleware
-app.use corser.create()
+app.use corser.create
+    methods: corser.simpleMethods.concat ["PUT", "DELETE"]
 
 
 # Static Routes

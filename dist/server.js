@@ -14,7 +14,9 @@
 
   module.exports = app = express();
 
-  app.use(corser.create());
+  app.use(corser.create({
+    methods: corser.simpleMethods.concat(["PUT", "DELETE"])
+  }));
 
   app.get("/hello", function(req, res) {
     return res.end("Hello World");
