@@ -1,10 +1,10 @@
 Sample = require '../dist/sample'
-Observation = require '../dist/observation'
+Interpretation = require '../dist/interpretation'
 Patient = require '../dist/patient'
 Help = require './help'
 should = require 'should'
 
-describe 'Observation Model', () ->
+describe 'Interpretation Model', () ->
 
     before (done) ->
         Help.startMongo done
@@ -15,31 +15,31 @@ describe 'Observation Model', () ->
     afterEach (done) ->
         Sample.remove {}, (err) ->
             done err if err
-            Observation.remove {}, done
+            Interpretation.remove {}, done
 
     it 'should allow creation', (done) ->
-        saveOneObservation (err, things) ->
+        saveOneInterpretation (err, things) ->
             should.not.exist err
-            things.observation.should.have.property 'sample'
-            things.observation.should.have.property 'comment'
+            things.interpretation.should.have.property 'sample'
+            things.interpretation.should.have.property 'comment'
             done()
 
     it 'should allow finding by sample', (done) ->
-        saveOneObservation (err, things) ->
-            Observation.find
+        saveOneInterpretation (err, things) ->
+            Interpretation.find
                 sample: things.sample._id
-                (err, observations) ->
+                (err, interpretations) ->
                     should.not.exist err
-                    observation = observations[0]
-                    #observation.should.eql things.observation
-                    observation._id.should.eql things.observation._id
-                    observation.comment.should.eql things.observation.comment
+                    interpretation = interpretations[0]
+                    #interpretation.should.eql things.interpretation
+                    interpretation._id.should.eql things.interpretation._id
+                    interpretation.comment.should.eql things.interpretation.comment
                     done()
 
     xit 'should allow finding by patient'
 
 # Helper Functions
-saveOneObservation = (callback) ->
+saveOneInterpretation = (callback) ->
     patient =
         mrn: '1234'
         name: 'Test Patient'
@@ -47,15 +47,15 @@ saveOneObservation = (callback) ->
         patient: null # will be patient._id
         type: "Foundation Medicine Report"
         value: 1234
-    observation =
+    interpretation =
         sample: null # will be sample._id
         comment: "Looks good"
     Patient.create patient, (err, patient) ->
             sample.patient = patient._id
             Sample.create sample, (err, sample) ->
-                observation.sample = sample._id
-                Observation.create observation, (err, observation) ->
+                interpretation.sample = sample._id
+                Interpretation.create interpretation, (err, interpretation) ->
                     callback err,
                         sample: sample
-                        observation: observation
+                        interpretation: interpretation
                         patient: patient

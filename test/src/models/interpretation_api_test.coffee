@@ -2,7 +2,7 @@ Help = require './help'
 should = require 'should'
 request = require 'request'
 
-describe 'Observation API', () ->
+describe 'Interpretation API', () ->
 
     before (done) ->
         Help.init done
@@ -12,7 +12,7 @@ describe 'Observation API', () ->
 
     patientUrl = "#{Help.url}/patients"
     sampleUrl = "#{Help.url}/samples"
-    observationUrl = "#{Help.url}/observations"
+    interpretationUrl = "#{Help.url}/interpretations"
 
     describe 'CRUD', () ->
 
@@ -39,7 +39,7 @@ describe 'Observation API', () ->
             type: 'SNPs'
             file: '493985-snp.txt'
 
-        observation =
+        interpretation =
             comment: 'Looks Good'
             tags: ['FMR', 'Bone Marrow']
 
@@ -63,39 +63,39 @@ describe 'Observation API', () ->
                             done()
 
         it 'Create', (done) ->
-            observation.sample = sample._id
+            interpretation.sample = sample._id
             request
-                url: observationUrl
+                url: interpretationUrl
                 method: 'POST'
-                json: observation
+                json: interpretation
                 (err, resp, body) ->
                     should.not.exist err
-                    body.tags.should.eql observation.tags
-                    body.comment.should.eql observation.comment
-                    observation = body
+                    body.tags.should.eql interpretation.tags
+                    body.comment.should.eql interpretation.comment
+                    interpretation = body
                     done()
 
         it 'Read (query by sample id)', (done) ->
             conditions = JSON.stringify
                 sample: sample._id
             request
-                url: "#{observationUrl}?conditions=#{conditions}"
+                url: "#{interpretationUrl}?conditions=#{conditions}"
                 method: 'GET'
                 json: true
                 (err, resp, body) ->
                     should.not.exist err
                     body.length.should.eql 1
                     obs = body[0]
-                    obs.should.eql observation
+                    obs.should.eql interpretation
                     done()
 
         it 'Update', (done) ->
-            observation.tags.push 'New'
+            interpretation.tags.push 'New'
             request
-                url: "#{observationUrl}/#{observation._id}"
+                url: "#{interpretationUrl}/#{interpretation._id}"
                 method: 'PUT'
                 json:
-                    tags: observation.tags
+                    tags: interpretation.tags
                 (err, resp, body) ->
                     should.not.exist err
                     body.tags.should.include 'New'
@@ -103,13 +103,13 @@ describe 'Observation API', () ->
 
         it 'Delete', (done) ->
             request
-                url: "#{observationUrl}/#{observation._id}"
+                url: "#{interpretationUrl}/#{interpretation._id}"
                 method: 'DELETE'
                 json: true
                 (err, resp, body) ->
                     should.not.exist err
                     request
-                        url: observationUrl
+                        url: interpretationUrl
                         method: 'GET'
                         json: true
                         (err, resp, body) ->

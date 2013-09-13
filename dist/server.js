@@ -39,10 +39,10 @@
     singular: 'Sample'
   });
 
-  require('./observation');
+  require('./interpretation');
 
   baucis.rest({
-    singular: 'Observation'
+    singular: 'Interpretation'
   });
 
   app.use('/api/v1', baucis({
