@@ -3,9 +3,9 @@ mongoose = require 'mongoose'
 interpretationSchema = new mongoose.Schema
     comment:
         type: String
-    sample:
+    observation:
         type: mongoose.Schema.Types.ObjectId
-        ref: 'Sample'
+        ref: 'Observation'
 
 interpretationSchema.set 'strict', false
 

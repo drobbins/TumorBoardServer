@@ -1,20 +1,24 @@
 (function() {
-  var interpretationSchema, mongoose;
+  var mongoose, observationSchema;
 
   mongoose = require('mongoose');
 
-  interpretationSchema = new mongoose.Schema({
-    comment: {
+  observationSchema = new mongoose.Schema({
+    type: {
+      type: String,
+      required: 'true'
+    },
+    value: {
       type: String
     },
-    sample: {
+    patient: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Sample'
+      ref: 'Patient'
     }
   });
 
-  interpretationSchema.set('strict', false);
+  observationSchema.set('strict', false);
 
-  module.exports = mongoose.model('Interpretation', interpretationSchema);
+  module.exports = mongoose.model('Observation', observationSchema);
 
 }).call(this);

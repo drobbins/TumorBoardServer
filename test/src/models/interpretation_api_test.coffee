@@ -11,7 +11,7 @@ describe 'Interpretation API', () ->
         Help.deinit done
 
     patientUrl = "#{Help.url}/patients"
-    sampleUrl = "#{Help.url}/samples"
+    observationUrl = "#{Help.url}/observations"
     interpretationUrl = "#{Help.url}/interpretations"
 
     describe 'CRUD', () ->
@@ -31,11 +31,11 @@ describe 'Interpretation API', () ->
             name: 'The Other One'
             age: 19
 
-        sample =
+        observation =
             type: 'Foundation Medicine Report'
             file: 'AKD934-FMR.pdf'
 
-        sample2 =
+        observation2 =
             type: 'SNPs'
             file: '493985-snp.txt'
 
@@ -43,7 +43,7 @@ describe 'Interpretation API', () ->
             comment: 'Looks Good'
             tags: ['FMR', 'Bone Marrow']
 
-        before (done) -> # Pre-load Patients and Samples
+        before (done) -> # Pre-load Patients and Observations
             request
                 url: patientUrl
                 method: 'POST'
@@ -51,19 +51,19 @@ describe 'Interpretation API', () ->
                 (err, resp, body) ->
                     done err if err
                     [patient, patient2, patient3] = body
-                    sample.patient = patient3._id
-                    sample2.patient = patient2._id
+                    observation.patient = patient3._id
+                    observation2.patient = patient2._id
                     request
-                        url: sampleUrl
+                        url: observationUrl
                         method: 'POST'
-                        json: [sample, sample2]
+                        json: [observation, observation2]
                         (err, resp, body) ->
                             done err if err
-                            [sample, sample2] = body
+                            [observation, observation2] = body
                             done()
 
         it 'Create', (done) ->
-            interpretation.sample = sample._id
+            interpretation.observation = observation._id
             request
                 url: interpretationUrl
                 method: 'POST'
@@ -75,9 +75,9 @@ describe 'Interpretation API', () ->
                     interpretation = body
                     done()
 
-        it 'Read (query by sample id)', (done) ->
+        it 'Read (query by observation id)', (done) ->
             conditions = JSON.stringify
-                sample: sample._id
+                observation: observation._id
             request
                 url: "#{interpretationUrl}?conditions=#{conditions}"
                 method: 'GET'

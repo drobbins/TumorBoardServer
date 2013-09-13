@@ -2,7 +2,7 @@ Help = require './help'
 should = require 'should'
 request = require 'request'
 
-describe 'Sample API', () ->
+describe 'Observation API', () ->
 
     before (done) ->
         Help.init done
@@ -11,7 +11,7 @@ describe 'Sample API', () ->
         Help.deinit done
 
     patientUrl = "#{Help.url}/patients"
-    sampleUrl = "#{Help.url}/samples"
+    observationUrl = "#{Help.url}/observations"
 
     describe 'CRUD', () ->
 
@@ -30,7 +30,7 @@ describe 'Sample API', () ->
             name: 'The Other One'
             age: 19
 
-        sample =
+        observation =
             type: 'Foundation Medicine Report'
             file: 'AKD934-FMR.pdf'
 
@@ -45,24 +45,24 @@ describe 'Sample API', () ->
                     done()
 
         it 'Create', (done) ->
-            sample.patient = patient3._id
+            observation.patient = patient3._id
             request
-                url: sampleUrl
+                url: observationUrl
                 method: 'POST'
-                json: sample
+                json: observation
                 (err, resp, body) ->
                     should.not.exist err
-                    body.should.have.property 'type', sample.type
-                    body.should.have.property 'patient', sample.patient
-                    body.should.have.property 'file', sample.file
-                    sample._id = body._id
+                    body.should.have.property 'type', observation.type
+                    body.should.have.property 'patient', observation.patient
+                    body.should.have.property 'file', observation.file
+                    observation._id = body._id
                     done()
 
         it 'Read (query)', (done) ->
             conditions = JSON.stringify
                 type: 'Foundation Medicine Report'
             request
-                url: "#{sampleUrl}?conditions=#{conditions}"
+                url: "#{observationUrl}?conditions=#{conditions}"
                 method: 'GET'
                 json: true
                 (err, resp, body) ->
@@ -72,21 +72,21 @@ describe 'Sample API', () ->
 
         it 'Update', (done) ->
             request
-                url: "#{sampleUrl}/#{sample._id}"
+                url: "#{observationUrl}/#{observation._id}"
                 method: 'PUT'
                 json:
                     dateReceived: '2013-08-29'
                 (err, resp, body) ->
                     should.not.exist err
-                    body.should.have.property 'type', sample.type
-                    body.should.have.property 'patient', sample.patient
-                    body.should.have.property 'file', sample.file
+                    body.should.have.property 'type', observation.type
+                    body.should.have.property 'patient', observation.patient
+                    body.should.have.property 'file', observation.file
                     body.should.have.property 'dateReceived', '2013-08-29'
                     done()
 
         it 'Delete', (done) ->
             request
-                url: "#{sampleUrl}/#{sample._id}"
+                url: "#{observationUrl}/#{observation._id}"
                 method: 'DELETE'
                 json: true
                 (err, resp, body) ->

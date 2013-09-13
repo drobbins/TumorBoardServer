@@ -7,8 +7,8 @@
 
   request = require('request');
 
-  describe('Interpretation API', function() {
-    var interpretationUrl, patientUrl, sampleUrl;
+  describe('Observation API', function() {
+    var observationUrl, patientUrl;
     before(function(done) {
       return Help.init(done);
     });
@@ -16,10 +16,9 @@
       return Help.deinit(done);
     });
     patientUrl = "" + Help.url + "/patients";
-    sampleUrl = "" + Help.url + "/samples";
-    interpretationUrl = "" + Help.url + "/interpretations";
+    observationUrl = "" + Help.url + "/observations";
     return describe('CRUD', function() {
-      var interpretation, patient, patient2, patient3, sample, sample2;
+      var observation, patient, patient2, patient3;
       patient = {
         mrn: '123ABC',
         name: 'Testing McPatient',
@@ -35,17 +34,9 @@
         name: 'The Other One',
         age: 19
       };
-      sample = {
+      observation = {
         type: 'Foundation Medicine Report',
         file: 'AKD934-FMR.pdf'
-      };
-      sample2 = {
-        type: 'SNPs',
-        file: '493985-snp.txt'
-      };
-      interpretation = {
-        comment: 'Looks Good',
-        tags: ['FMR', 'Bone Marrow']
       };
       before(function(done) {
         return request({
@@ -57,83 +48,63 @@
             done(err);
           }
           patient = body[0], patient2 = body[1], patient3 = body[2];
-          sample.patient = patient3._id;
-          sample2.patient = patient2._id;
-          return request({
-            url: sampleUrl,
-            method: 'POST',
-            json: [sample, sample2]
-          }, function(err, resp, body) {
-            if (err) {
-              done(err);
-            }
-            sample = body[0], sample2 = body[1];
-            return done();
-          });
-        });
-      });
-      it('Create', function(done) {
-        interpretation.sample = sample._id;
-        return request({
-          url: interpretationUrl,
-          method: 'POST',
-          json: interpretation
-        }, function(err, resp, body) {
-          should.not.exist(err);
-          body.tags.should.eql(interpretation.tags);
-          body.comment.should.eql(interpretation.comment);
-          interpretation = body;
           return done();
         });
       });
-      it('Read (query by sample id)', function(done) {
+      it('Create', function(done) {
+        observation.patient = patient3._id;
+        return request({
+          url: observationUrl,
+          method: 'POST',
+          json: observation
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          body.should.have.property('type', observation.type);
+          body.should.have.property('patient', observation.patient);
+          body.should.have.property('file', observation.file);
+          observation._id = body._id;
+          return done();
+        });
+      });
+      it('Read (query)', function(done) {
         var conditions;
         conditions = JSON.stringify({
-          sample: sample._id
+          type: 'Foundation Medicine Report'
         });
         return request({
-          url: "" + interpretationUrl + "?conditions=" + conditions,
+          url: "" + observationUrl + "?conditions=" + conditions,
           method: 'GET',
           json: true
         }, function(err, resp, body) {
-          var obs;
           should.not.exist(err);
           body.length.should.eql(1);
-          obs = body[0];
-          obs.should.eql(interpretation);
           return done();
         });
       });
       it('Update', function(done) {
-        interpretation.tags.push('New');
         return request({
-          url: "" + interpretationUrl + "/" + interpretation._id,
+          url: "" + observationUrl + "/" + observation._id,
           method: 'PUT',
           json: {
-            tags: interpretation.tags
+            dateReceived: '2013-08-29'
           }
         }, function(err, resp, body) {
           should.not.exist(err);
-          body.tags.should.include('New');
+          body.should.have.property('type', observation.type);
+          body.should.have.property('patient', observation.patient);
+          body.should.have.property('file', observation.file);
+          body.should.have.property('dateReceived', '2013-08-29');
           return done();
         });
       });
       return it('Delete', function(done) {
         return request({
-          url: "" + interpretationUrl + "/" + interpretation._id,
+          url: "" + observationUrl + "/" + observation._id,
           method: 'DELETE',
           json: true
         }, function(err, resp, body) {
           should.not.exist(err);
-          return request({
-            url: interpretationUrl,
-            method: 'GET',
-            json: true
-          }, function(err, resp, body) {
-            should.not.exist(err);
-            body.length.should.eql(0);
-            return done();
-          });
+          return done();
         });
       });
     });

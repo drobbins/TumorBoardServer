@@ -8,7 +8,7 @@
   request = require('request');
 
   describe('Interpretation API', function() {
-    var interpretationUrl, patientUrl, sampleUrl;
+    var interpretationUrl, observationUrl, patientUrl;
     before(function(done) {
       return Help.init(done);
     });
@@ -16,10 +16,10 @@
       return Help.deinit(done);
     });
     patientUrl = "" + Help.url + "/patients";
-    sampleUrl = "" + Help.url + "/samples";
+    observationUrl = "" + Help.url + "/observations";
     interpretationUrl = "" + Help.url + "/interpretations";
     return describe('CRUD', function() {
-      var interpretation, patient, patient2, patient3, sample, sample2;
+      var interpretation, observation, observation2, patient, patient2, patient3;
       patient = {
         mrn: '123ABC',
         name: 'Testing McPatient',
@@ -35,11 +35,11 @@
         name: 'The Other One',
         age: 19
       };
-      sample = {
+      observation = {
         type: 'Foundation Medicine Report',
         file: 'AKD934-FMR.pdf'
       };
-      sample2 = {
+      observation2 = {
         type: 'SNPs',
         file: '493985-snp.txt'
       };
@@ -57,23 +57,23 @@
             done(err);
           }
           patient = body[0], patient2 = body[1], patient3 = body[2];
-          sample.patient = patient3._id;
-          sample2.patient = patient2._id;
+          observation.patient = patient3._id;
+          observation2.patient = patient2._id;
           return request({
-            url: sampleUrl,
+            url: observationUrl,
             method: 'POST',
-            json: [sample, sample2]
+            json: [observation, observation2]
           }, function(err, resp, body) {
             if (err) {
               done(err);
             }
-            sample = body[0], sample2 = body[1];
+            observation = body[0], observation2 = body[1];
             return done();
           });
         });
       });
       it('Create', function(done) {
-        interpretation.sample = sample._id;
+        interpretation.observation = observation._id;
         return request({
           url: interpretationUrl,
           method: 'POST',
@@ -86,10 +86,10 @@
           return done();
         });
       });
-      it('Read (query by sample id)', function(done) {
+      it('Read (query by observation id)', function(done) {
         var conditions;
         conditions = JSON.stringify({
-          sample: sample._id
+          observation: observation._id
         });
         return request({
           url: "" + interpretationUrl + "?conditions=" + conditions,

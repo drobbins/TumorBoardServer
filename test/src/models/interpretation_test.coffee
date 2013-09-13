@@ -1,4 +1,4 @@
-Sample = require '../dist/sample'
+Observation = require '../dist/observation'
 Interpretation = require '../dist/interpretation'
 Patient = require '../dist/patient'
 Help = require './help'
@@ -13,21 +13,21 @@ describe 'Interpretation Model', () ->
         Help.stopMongo done
 
     afterEach (done) ->
-        Sample.remove {}, (err) ->
+        Observation.remove {}, (err) ->
             done err if err
             Interpretation.remove {}, done
 
     it 'should allow creation', (done) ->
         saveOneInterpretation (err, things) ->
             should.not.exist err
-            things.interpretation.should.have.property 'sample'
+            things.interpretation.should.have.property 'observation'
             things.interpretation.should.have.property 'comment'
             done()
 
-    it 'should allow finding by sample', (done) ->
+    it 'should allow finding by observation', (done) ->
         saveOneInterpretation (err, things) ->
             Interpretation.find
-                sample: things.sample._id
+                observation: things.observation._id
                 (err, interpretations) ->
                     should.not.exist err
                     interpretation = interpretations[0]
@@ -43,19 +43,19 @@ saveOneInterpretation = (callback) ->
     patient =
         mrn: '1234'
         name: 'Test Patient'
-    sample =
+    observation =
         patient: null # will be patient._id
         type: "Foundation Medicine Report"
         value: 1234
     interpretation =
-        sample: null # will be sample._id
+        observation: null # will be observation._id
         comment: "Looks good"
     Patient.create patient, (err, patient) ->
-            sample.patient = patient._id
-            Sample.create sample, (err, sample) ->
-                interpretation.sample = sample._id
+            observation.patient = patient._id
+            Observation.create observation, (err, observation) ->
+                interpretation.observation = observation._id
                 Interpretation.create interpretation, (err, interpretation) ->
                     callback err,
-                        sample: sample
+                        observation: observation
                         interpretation: interpretation
                         patient: patient

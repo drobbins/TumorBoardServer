@@ -1,9 +1,9 @@
 (function() {
-  var mongoose, sampleSchema;
+  var mongoose, observationSchema;
 
   mongoose = require('mongoose');
 
-  sampleSchema = new mongoose.Schema({
+  observationSchema = new mongoose.Schema({
     type: {
       type: String,
       required: 'true'
@@ -17,8 +17,8 @@
     }
   });
 
-  sampleSchema.set('strict', false);
+  observationSchema.set('strict', false);
 
-  module.exports = mongoose.model('Sample', sampleSchema);
+  module.exports = mongoose.model('Observation', observationSchema);
 
 }).call(this);

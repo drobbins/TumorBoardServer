@@ -1,7 +1,7 @@
 (function() {
-  var Help, Patient, Sample, saveOneSample, should;
+  var Help, Observation, Patient, saveOneObservation, should;
 
-  Sample = require('../dist/sample');
+  Observation = require('../dist/observation');
 
   Patient = require('../dist/patient');
 
@@ -9,7 +9,7 @@
 
   should = require('should');
 
-  describe('Sample Model', function() {
+  describe('Observation Model', function() {
     before(function(done) {
       return Help.startMongo(done);
     });
@@ -17,7 +17,7 @@
       return Help.stopMongo(done);
     });
     afterEach(function(done) {
-      return Sample.remove({}, function(err) {
+      return Observation.remove({}, function(err) {
         if (err) {
           done(err);
         }
@@ -25,20 +25,20 @@
       });
     });
     it('should allow creation', function(done) {
-      return saveOneSample(function(err, sample) {
+      return saveOneObservation(function(err, observation) {
         should.not.exist(err);
-        sample.should.have.property('patient');
-        sample.should.have.property('type');
-        sample.should.have.property('value');
+        observation.should.have.property('patient');
+        observation.should.have.property('type');
+        observation.should.have.property('value');
         return done();
       });
     });
     return it('should be findable by patient', function(done) {
-      return saveOneSample(function(err) {
+      return saveOneObservation(function(err) {
         return Patient.findOne(function(err, patient) {
-          return Sample.find({
+          return Observation.find({
             patient: patient._id
-          }, function(err, sample) {
+          }, function(err, observation) {
             should.not.exist(err);
             return done();
           });
@@ -47,20 +47,20 @@
     });
   });
 
-  saveOneSample = function(callback) {
+  saveOneObservation = function(callback) {
     var patient;
     patient = {
       mrn: '1234',
       name: 'Test Patient'
     };
     return Patient.create(patient, function(err, patient) {
-      var sample;
-      sample = {
+      var observation;
+      observation = {
         patient: patient._id,
         type: "Foundation Medicine Report",
         value: 1234
       };
-      return Sample.create(sample, callback);
+      return Observation.create(observation, callback);
     });
   };
 

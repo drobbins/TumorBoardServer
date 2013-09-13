@@ -1,9 +1,9 @@
-Sample = require '../dist/sample'
+Observation = require '../dist/observation'
 Patient = require '../dist/patient'
 Help = require './help'
 should = require 'should'
 
-describe 'Sample Model', () ->
+describe 'Observation Model', () ->
 
     before (done) ->
         Help.startMongo done
@@ -12,37 +12,37 @@ describe 'Sample Model', () ->
         Help.stopMongo done
 
     afterEach (done) ->
-        Sample.remove {}, (err) ->
+        Observation.remove {}, (err) ->
             done err if err
             Patient.remove {}, done
 
     it 'should allow creation', (done) ->
-        saveOneSample (err, sample) ->
+        saveOneObservation (err, observation) ->
             should.not.exist err
-            sample.should.have.property 'patient'
-            sample.should.have.property 'type'
-            sample.should.have.property 'value'
+            observation.should.have.property 'patient'
+            observation.should.have.property 'type'
+            observation.should.have.property 'value'
             done()
 
     it 'should be findable by patient', (done) ->
-        saveOneSample (err) ->
+        saveOneObservation (err) ->
             Patient.findOne (err, patient) ->
-                Sample.find
+                Observation.find
                     patient: patient._id
-                    (err, sample) ->
+                    (err, observation) ->
                         should.not.exist err
                         done()
 
 
 # Helper Functions
-saveOneSample = (callback) ->
+saveOneObservation = (callback) ->
     patient =
         mrn: '1234'
         name: 'Test Patient'
     Patient.create patient,
         (err, patient) ->
-            sample =
+            observation =
                 patient: patient._id
                 type: "Foundation Medicine Report"
                 value: 1234
-            Sample.create sample, callback
+            Observation.create observation, callback

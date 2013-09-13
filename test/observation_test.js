@@ -1,9 +1,7 @@
 (function() {
-  var Help, Interpretation, Patient, Sample, saveOneInterpretation, should;
+  var Help, Observation, Patient, saveOneObservation, should;
 
-  Sample = require('../dist/sample');
-
-  Interpretation = require('../dist/interpretation');
+  Observation = require('../dist/observation');
 
   Patient = require('../dist/patient');
 
@@ -11,7 +9,7 @@
 
   should = require('should');
 
-  describe('Interpretation Model', function() {
+  describe('Observation Model', function() {
     before(function(done) {
       return Help.startMongo(done);
     });
@@ -19,65 +17,50 @@
       return Help.stopMongo(done);
     });
     afterEach(function(done) {
-      return Sample.remove({}, function(err) {
+      return Observation.remove({}, function(err) {
         if (err) {
           done(err);
         }
-        return Interpretation.remove({}, done);
+        return Patient.remove({}, done);
       });
     });
     it('should allow creation', function(done) {
-      return saveOneInterpretation(function(err, things) {
+      return saveOneObservation(function(err, observation) {
         should.not.exist(err);
-        things.interpretation.should.have.property('sample');
-        things.interpretation.should.have.property('comment');
+        observation.should.have.property('patient');
+        observation.should.have.property('type');
+        observation.should.have.property('value');
         return done();
       });
     });
-    it('should allow finding by sample', function(done) {
-      return saveOneInterpretation(function(err, things) {
-        return Interpretation.find({
-          sample: things.sample._id
-        }, function(err, interpretations) {
-          var interpretation;
-          should.not.exist(err);
-          interpretation = interpretations[0];
-          interpretation._id.should.eql(things.interpretation._id);
-          interpretation.comment.should.eql(things.interpretation.comment);
-          return done();
+    return it('should be findable by patient', function(done) {
+      return saveOneObservation(function(err) {
+        return Patient.findOne(function(err, patient) {
+          return Observation.find({
+            patient: patient._id
+          }, function(err, observation) {
+            should.not.exist(err);
+            return done();
+          });
         });
       });
     });
-    return xit('should allow finding by patient');
   });
 
-  saveOneInterpretation = function(callback) {
-    var interpretation, patient, sample;
+  saveOneObservation = function(callback) {
+    var patient;
     patient = {
       mrn: '1234',
       name: 'Test Patient'
     };
-    sample = {
-      patient: null,
-      type: "Foundation Medicine Report",
-      value: 1234
-    };
-    interpretation = {
-      sample: null,
-      comment: "Looks good"
-    };
     return Patient.create(patient, function(err, patient) {
-      sample.patient = patient._id;
-      return Sample.create(sample, function(err, sample) {
-        interpretation.sample = sample._id;
-        return Interpretation.create(interpretation, function(err, interpretation) {
-          return callback(err, {
-            sample: sample,
-            interpretation: interpretation,
-            patient: patient
-          });
-        });
-      });
+      var observation;
+      observation = {
+        patient: patient._id,
+        type: "Foundation Medicine Report",
+        value: 1234
+      };
+      return Observation.create(observation, callback);
     });
   };
 

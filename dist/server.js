@@ -33,10 +33,10 @@
     singular: 'Patient'
   });
 
-  require('./sample');
+  require('./observation');
 
   baucis.rest({
-    singular: 'Sample'
+    singular: 'Observation'
   });
 
   require('./interpretation');

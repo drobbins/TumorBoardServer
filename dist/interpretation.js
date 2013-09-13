@@ -7,9 +7,9 @@
     comment: {
       type: String
     },
-    sample: {
+    observation: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Sample'
+      ref: 'Observation'
     }
   });
 
