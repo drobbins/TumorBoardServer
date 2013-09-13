@@ -7,6 +7,9 @@ argv = optimist.options 'port',
     .options 'mongoUrl',
         default: 'mongodb://localhost/tb'
         describe: 'MongoDB connection string'
+    .options 'prefix',
+        default: ''
+        describe: 'Prefix for all routes (e.g. /hello -> /prefix/hello)'
     .check (args) ->
         throw "Example: node dist/main.js --port 8181 --mongoUrl mongodb://localhost/mydb" if args.h or args.help
     .argv

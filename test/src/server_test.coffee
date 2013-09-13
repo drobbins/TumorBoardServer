@@ -49,3 +49,28 @@ describe 'Tumor Board Server', () ->
                 resp.statusCode.should.equal 200
                 body.should.equal 'Hello World'
                 server.close done
+
+        it 'should accept a route prefix (basepath)', (done) ->
+            options.prefix = '/tboards'
+            server.config options
+            server.listen(7777)
+            request 'http://localhost:7777/tboards/hello', (err, resp, body) ->
+                should.not.exist err
+                resp.statusCode.should.equal 200
+                body.should.equal 'Hello World'
+                server.close done
+
+        it 'baucis should work with a route prefix (basepath)', (done) ->
+            options.prefix = '/tboards'
+            server.config options
+            server.listen(7777)
+            url = 'http://localhost:7777/tboards/api/v1/api-docs'
+            request
+                url: url
+                json: true
+                (err, resp, body) ->
+                    should.not.exist err
+                    resp.statusCode.should.equal 200
+                    body.basePath.should.equal url.slice 0,-9
+                    body.apis.length.should.be.above 0
+                    server.close done

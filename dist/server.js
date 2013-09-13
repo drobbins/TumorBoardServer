@@ -1,5 +1,5 @@
 (function() {
-  var app, baucis, corser, express, http, mongoose,
+  var app, baucis, controller, corser, express, http, mongoose,
     __slice = [].slice;
 
   express = require('express');
@@ -45,9 +45,11 @@
     singular: 'Interpretation'
   });
 
-  app.use('/api/v1', baucis({
+  controller = baucis({
     swagger: true
-  }));
+  });
+
+  app.use("/api/v1", controller);
 
   app.set('__options', {});
 
@@ -75,6 +77,10 @@
   app.listen = function() {
     var args, server;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    if (app.get('prefix')) {
+      app.use(app.get('prefix'), app.router);
+      app.use("" + (app.get('prefix')) + "/api/v1", controller);
+    }
     switch (mongoose.connection.readyState) {
       case 0:
       case 3:

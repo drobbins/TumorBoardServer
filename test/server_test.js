@@ -52,13 +52,41 @@
           });
         });
       });
-      return it('should accept a port # for server.listen', function(done) {
+      it('should accept a port # for server.listen', function(done) {
         server.config(options);
         server.listen(7777);
         return request('http://localhost:7777/hello', function(err, resp, body) {
           should.not.exist(err);
           resp.statusCode.should.equal(200);
           body.should.equal('Hello World');
+          return server.close(done);
+        });
+      });
+      it('should accept a route prefix (basepath)', function(done) {
+        options.prefix = '/tboards';
+        server.config(options);
+        server.listen(7777);
+        return request('http://localhost:7777/tboards/hello', function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.equal(200);
+          body.should.equal('Hello World');
+          return server.close(done);
+        });
+      });
+      return it('baucis should work with a route prefix (basepath)', function(done) {
+        var url;
+        options.prefix = '/tboards';
+        server.config(options);
+        server.listen(7777);
+        url = 'http://localhost:7777/tboards/api/v1/api-docs';
+        return request({
+          url: url,
+          json: true
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.equal(200);
+          body.basePath.should.equal(url.slice(0, -9));
+          body.apis.length.should.be.above(0);
           return server.close(done);
         });
       });

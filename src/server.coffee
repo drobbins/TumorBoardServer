@@ -10,7 +10,6 @@ module.exports = app = express()
 app.use corser.create
     methods: corser.simpleMethods.concat ["PUT", "DELETE"]
 
-
 # Static Routes
 app.get "/hello", (req, res) -> res.end "Hello World"
 app.options '*', (req, res) ->
@@ -25,7 +24,8 @@ require './observation'
 baucis.rest singular: 'Observation'
 require './interpretation'
 baucis.rest singular: 'Interpretation'
-app.use '/api/v1', baucis swagger:true
+controller = baucis swagger:true # Need to capture the controller here for use later
+app.use "/api/v1", controller
 
 # Testability Helpers
 app.set '__options', {}
@@ -41,6 +41,11 @@ app.clear = () ->
         (app.get '__options')[option] = false
 
 app.listen = (args...) ->
+  # Prefix routes, if asked to.
+    if app.get('prefix')
+        app.use app.get('prefix'),app.router
+        app.use "#{app.get 'prefix'}/api/v1", controller
+
   # Initalize MongoDB Connection
     switch mongoose.connection.readyState
         when 0, 3 then mongoose.connect (app.get 'mongoUrl') or 'mongodb://localhost/tb'
