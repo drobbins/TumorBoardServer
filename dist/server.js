@@ -45,8 +45,15 @@
     singular: 'Interpretation'
   });
 
+  require('./conference');
+
+  baucis.rest({
+    singular: 'Conference'
+  });
+
   controller = baucis({
-    swagger: true
+    swagger: true,
+    version: "0.2.0"
   });
 
   app.use("/api/v1", controller);

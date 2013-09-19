@@ -24,7 +24,11 @@ require './observation'
 baucis.rest singular: 'Observation'
 require './interpretation'
 baucis.rest singular: 'Interpretation'
-controller = baucis swagger:true # Need to capture the controller here for use later
+require './conference'
+baucis.rest singular: 'Conference'
+controller = baucis # Need to capture the controller here for use later
+    swagger:true
+    version: "0.2.0"
 app.use "/api/v1", controller
 
 # Testability Helpers
