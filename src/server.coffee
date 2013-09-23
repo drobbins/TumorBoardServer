@@ -8,6 +8,7 @@ module.exports = app = express()
 
 # Middleware
 app.use corser.create
+    requestHeaders:  corser.simpleRequestHeaders.concat ["X-Requested-With"]
     methods: corser.simpleMethods.concat ["PUT", "DELETE"]
 
 # Static Routes

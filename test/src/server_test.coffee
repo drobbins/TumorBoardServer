@@ -23,10 +23,11 @@ describe 'Tumor Board Server', () ->
 
     describe 'basic server functionality', () ->
 
-        options =
-            port: 8888
+        options = {}
 
         beforeEach () ->
+            options =
+                port: 8888
             server.clear()
 
         it 'should listen after server.listen, and stop after server.close', (done) ->
@@ -74,3 +75,27 @@ describe 'Tumor Board Server', () ->
                     body.basePath.should.equal url.slice 0,-9
                     body.apis.length.should.be.above 0
                     server.close done
+
+        it 'should appropriately support CORS', (done) ->
+            server.config options
+            server.listen()
+            request
+                url: 'http://localhost:8888/'
+                method: "OPTIONS"
+                headers:
+                    'origin': 'example.com'
+                    'accept-control-request-headers': 'x-requested-with'
+                    'access-control-request-method': 'GET'
+                (err, resp, body) ->
+                    should.not.exist err
+                    resp.statusCode.should.equal 204
+                    resp.headers.should.have.property 'access-control-allow-headers'
+                    request
+                        url: 'http://localhost:8888/api/v1/api-docs'
+                        headers:
+                            'origin': 'example.com'
+                            'x-requested-with': 'bunnies'
+                        (err, resp, body) ->
+                            should.not.exist err
+                            resp.headers.should.have.property 'access-control-allow-origin', '*'
+                            server.close done
