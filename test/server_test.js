@@ -31,10 +31,11 @@
     });
     return describe('basic server functionality', function() {
       var options;
-      options = {
-        port: 8888
-      };
+      options = {};
       beforeEach(function() {
+        options = {
+          port: 8888
+        };
         return server.clear();
       });
       it('should listen after server.listen, and stop after server.close', function(done) {
@@ -73,7 +74,7 @@
           return server.close(done);
         });
       });
-      return it('baucis should work with a route prefix (basepath)', function(done) {
+      it('baucis should work with a route prefix (basepath)', function(done) {
         var url;
         options.prefix = '/tboards';
         server.config(options);
@@ -88,6 +89,34 @@
           body.basePath.should.equal(url.slice(0, -9));
           body.apis.length.should.be.above(0);
           return server.close(done);
+        });
+      });
+      return it('should appropriately support CORS', function(done) {
+        server.config(options);
+        server.listen();
+        return request({
+          url: 'http://localhost:8888/',
+          method: "OPTIONS",
+          headers: {
+            'origin': 'example.com',
+            'accept-control-request-headers': 'x-requested-with',
+            'access-control-request-method': 'GET'
+          }
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.equal(204);
+          resp.headers.should.have.property('access-control-allow-headers');
+          return request({
+            url: 'http://localhost:8888/api/v1/api-docs',
+            headers: {
+              'origin': 'example.com',
+              'x-requested-with': 'bunnies'
+            }
+          }, function(err, resp, body) {
+            should.not.exist(err);
+            resp.headers.should.have.property('access-control-allow-origin', '*');
+            return server.close(done);
+          });
         });
       });
     });

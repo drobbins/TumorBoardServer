@@ -8,6 +8,7 @@ module.exports = app = express()
 
 # Middleware
 app.use corser.create
+    requestHeaders:  corser.simpleRequestHeaders.concat ["X-Requested-With"]
     methods: corser.simpleMethods.concat ["PUT", "DELETE"]
 
 # Static Routes
@@ -28,7 +29,7 @@ require './conference'
 baucis.rest singular: 'Conference'
 controller = baucis # Need to capture the controller here for use later
     swagger:true
-    version: "0.2.0"
+    version: "0.2.1"
 app.use "/api/v1", controller
 
 # Testability Helpers

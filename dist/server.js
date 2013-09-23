@@ -15,6 +15,7 @@
   module.exports = app = express();
 
   app.use(corser.create({
+    requestHeaders: corser.simpleRequestHeaders.concat(["X-Requested-With"]),
     methods: corser.simpleMethods.concat(["PUT", "DELETE"])
   }));
 
@@ -53,7 +54,7 @@
 
   controller = baucis({
     swagger: true,
-    version: "0.2.0"
+    version: "0.2.1"
   });
 
   app.use("/api/v1", controller);
