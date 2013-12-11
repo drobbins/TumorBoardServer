@@ -67,6 +67,7 @@ describe 'Patient API', () ->
                     p2.should.have.property 'mrn', patient2.mrn
                     p2.should.have.property 'name', patient2.name
                     p2.should.have.property 'age', patient2.age
+                    should.not.exist resp.headers.location
                     done()
 
         it 'Read (query)', (done) ->

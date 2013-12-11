@@ -1,6 +1,6 @@
 {
   "name": "TumorBoardServer",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Stores select patient information in a format amenable to the molecular tumor boards.",
   "main": "index.js",
   "scripts": {
@@ -17,9 +17,9 @@
     "grunt-contrib-watch": "~0.5.3"
   },
   "dependencies": {
-    "baucis": "~0.6.11",
-    "mongoose": "~3.6.18",
-    "express": "~3.3.5",
+    "baucis": "~0.6.18",
+    "mongoose": "~3.8.1",
+    "express": "~3.4.6",
     "request": "~2.27.0",
     "corser": "~1.2.0",
     "optimist": "~0.6.0"
