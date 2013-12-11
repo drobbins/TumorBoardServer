@@ -1,5 +1,5 @@
 (function() {
-  var app, baucis, controller, corser, express, http, mongoose,
+  var app, baucis, controller, corser, express, http, mongoose, observationController,
     __slice = [].slice;
 
   express = require('express');
@@ -36,9 +36,11 @@
 
   require('./observation');
 
-  baucis.rest({
+  observationController = baucis.rest({
     singular: 'Observation'
   });
+
+  observationController.use(require('./observationFiles'));
 
   require('./interpretation');
 
@@ -54,7 +56,7 @@
 
   controller = baucis({
     swagger: true,
-    version: "0.2.1"
+    version: "0.3.0"
   });
 
   app.use("/api/v1", controller);
