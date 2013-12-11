@@ -21,12 +21,17 @@ app.options '*', (req, res) ->
 # Model Routes
 require './patient'
 baucis.rest singular: 'Patient'
+
 require './observation'
-baucis.rest singular: 'Observation'
+observationController = baucis.rest singular: 'Observation' # Capture observation controller to add file-uploads subcontroller
+observationController.use require './observationFiles' # Add file-uploads subcontroller
+
 require './interpretation'
 baucis.rest singular: 'Interpretation'
+
 require './conference'
 baucis.rest singular: 'Conference'
+
 controller = baucis # Need to capture the controller here for use later
     swagger:true
     version: "0.2.1"

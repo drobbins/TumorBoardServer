@@ -1,5 +1,7 @@
 (function() {
-  var Help, request, should;
+  var Help, fs, request, should;
+
+  fs = require('fs');
 
   Help = require('./help');
 
@@ -18,7 +20,7 @@
     patientUrl = "" + Help.url + "/patients";
     observationUrl = "" + Help.url + "/observations";
     return describe('CRUD', function() {
-      var observation, patient, patient2, patient3;
+      var observation, originalFile, patient, patient2, patient3, testFilePath;
       patient = {
         mrn: '123ABC',
         name: 'Testing McPatient',
@@ -38,6 +40,8 @@
         type: 'Foundation Medicine Report',
         file: 'AKD934-FMR.pdf'
       };
+      testFilePath = 'test/TestFile.pdf';
+      originalFile = fs.readFileSync(testFilePath);
       before(function(done) {
         return request({
           url: patientUrl,
@@ -81,6 +85,19 @@
           return done();
         });
       });
+      it('Read (by ID)', function(done) {
+        return request({
+          url: "" + observationUrl + "/" + observation._id,
+          method: 'GET',
+          json: true
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          body.should.have.property('type', observation.type);
+          body.should.have.property('patient', observation.patient);
+          body.should.have.property('file', observation.file);
+          return done();
+        });
+      });
       it('Update', function(done) {
         return request({
           url: "" + observationUrl + "/" + observation._id,
@@ -97,6 +114,47 @@
           return done();
         });
       });
+      it('Put File', function(done) {
+        var url;
+        url = "" + observationUrl + "/" + observation._id + "/file";
+        return fs.createReadStream(testFilePath).pipe(request.put(url, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.eql(201);
+          body = JSON.parse(body);
+          body.length.should.eql(originalFile.length);
+          return done();
+        }));
+      });
+      it('Get File', function(done) {
+        var file;
+        request.get("" + observationUrl + "/" + observation._id + "/file").pipe(file = fs.createWriteStream('temp.pdf'));
+        return file.on('finish', function() {
+          var writtenFile;
+          writtenFile = fs.readFileSync('temp.pdf');
+          writtenFile.length.should.eql(originalFile.length);
+          fs.unlinkSync('temp.pdf');
+          return done();
+        });
+      });
+      it('Delete File', function(done) {
+        return request({
+          url: "" + observationUrl + "/" + observation._id + "/file",
+          method: 'DELETE'
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.eql(200);
+          return done();
+        });
+      });
+      it('Don\'t Get File After Delete', function(done) {
+        var callback;
+        callback = function(err, resp) {
+          should.not.exist(err);
+          resp.statusCode.should.eql(404);
+          return done();
+        };
+        return request.get("" + observationUrl + "/" + observation._id + "/file", callback);
+      });
       return it('Delete', function(done) {
         return request({
           url: "" + observationUrl + "/" + observation._id,
@@ -104,6 +162,7 @@
           json: true
         }, function(err, resp, body) {
           should.not.exist(err);
+          resp.statusCode.should.eql(200);
           return done();
         });
       });

@@ -1,5 +1,5 @@
 (function() {
-  var app, baucis, controller, corser, express, http, mongoose,
+  var app, baucis, controller, corser, express, http, mongoose, observationController,
     __slice = [].slice;
 
   express = require('express');
@@ -36,9 +36,11 @@
 
   require('./observation');
 
-  baucis.rest({
+  observationController = baucis.rest({
     singular: 'Observation'
   });
+
+  observationController.use(require('./observationFiles'));
 
   require('./interpretation');
 
