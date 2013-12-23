@@ -1,5 +1,5 @@
 (function() {
-  var app, baucis, controller, corser, express, http, mongoose, observationController,
+  var app, baucis, controller, corser, express, http, mongoose, observationController, observationFiles,
     __slice = [].slice;
 
   express = require('express');
@@ -40,7 +40,11 @@
     singular: 'Observation'
   });
 
-  observationController.use(require('./observationFiles'));
+  observationFiles = require('./observationFiles');
+
+  observationController.use(observationFiles);
+
+  observationController.request('del', observationFiles.get('deleteFileMiddleware'));
 
   require('./interpretation');
 
@@ -56,7 +60,7 @@
 
   controller = baucis({
     swagger: true,
-    version: "0.3.1"
+    version: "0.3.2"
   });
 
   app.use("/api/v1", controller);

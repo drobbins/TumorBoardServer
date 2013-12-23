@@ -17,6 +17,25 @@ binaryBodyParser = (req, res, next) ->
         req.body = body
         next()
 
+deleteFileMiddleware = (req, res, next) ->
+    db = getDb()
+    db.collection "#{prefix}.files", (err, collection) ->
+        next err if err
+        collection.findOne
+            metadata:
+                observation: req.params.id
+            (err, doc) ->
+                next err if err
+                if doc
+                    gridStore = new mongoose.mongo.GridStore db, doc._id, "w", { root: prefix }
+                    gridStore.open (err, gridStore) ->
+                        gridStore.unlink (err, file) ->
+                            next err if err
+                            next()
+                else
+                    next()
+
+controller.set 'deleteFileMiddleware', deleteFileMiddleware
 
 controller.put "/:observationId/file", binaryBodyParser, (req, res, next) ->
     db = getDb()
@@ -47,17 +66,5 @@ controller.get "/:observationId/file", (req, res, next) ->
                         res.type doc.contentType || "application/octet-stream"
                         res.send file
 
-controller['delete'] "/:observationId/file", (req, res, next) ->
-    db = getDb()
-    db.collection "#{prefix}.files", (err, collection) ->
-        next err if err
-        collection.findOne
-            metadata:
-                observation: req.params.observationId
-            (err, doc) ->
-                next err if err
-                gridStore = new mongoose.mongo.GridStore db, doc._id, "w", { root: prefix }
-                gridStore.open (err, gridStore) ->
-                    gridStore.unlink (err, file) ->
-                        next err if err
-                        res.send 200
+controller['delete'] "/:id/file", deleteFileMiddleware, (req, res, next) ->
+    res.send 200
