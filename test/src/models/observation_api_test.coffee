@@ -35,6 +35,10 @@ describe 'Observation API', () ->
             type: 'Foundation Medicine Report'
             file: 'AKD934-FMR.pdf'
 
+        observation2 =
+            type: 'Wash U Report'
+            value: '1234'
+
         testFilePath = 'test/TestFile.pdf'
         originalFile = fs.readFileSync testFilePath
 
@@ -143,3 +147,33 @@ describe 'Observation API', () ->
                     should.not.exist err
                     resp.statusCode.should.eql 200
                     done()
+
+        it 'Delete File if Observation Deleted', (done) ->
+            observation2.patient = patient._id
+            request                                                                                 # Create Observation
+                url: observationUrl
+                method: 'POST'
+                json: observation2
+                (err, resp, body) ->
+                    should.not.exist err
+                    resp.statusCode.should.eql 201
+                    body.should.have.property 'type', observation2.type
+                    body.should.have.property 'patient', observation2.patient
+                    body.should.have.property 'value', observation2.value
+                    observation2._id = body._id
+                    url = "#{observationUrl}/#{observation2._id}/file"
+                    fs.createReadStream(testFilePath).pipe request.put url, (err, resp, body) ->    # Upload File
+                        should.not.exist err
+                        resp.statusCode.should.eql 201
+                        request                                                                     # Delete Observation
+                            url: "#{observationUrl}/#{observation2._id}"
+                            method: 'DELETE'
+                            json: true
+                            (err, resp, body) ->
+                                should.not.exist err
+                                resp.statusCode.should.eql 200
+                                callback = (err, resp, body) ->
+                                    should.not.exist err
+                                    resp.statusCode.should.eql 404
+                                    done()
+                                request.get("#{observationUrl}/#{observation2._id}/file", callback)  # File should not be

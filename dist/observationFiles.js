@@ -1,5 +1,5 @@
 (function() {
-  var binaryBodyParser, controller, express, getDb, mongoose, prefix;
+  var binaryBodyParser, controller, deleteFileMiddleware, express, getDb, mongoose, prefix;
 
   mongoose = require('mongoose');
 
@@ -28,6 +28,43 @@
       return next();
     });
   };
+
+  deleteFileMiddleware = function(req, res, next) {
+    var db;
+    db = getDb();
+    return db.collection("" + prefix + ".files", function(err, collection) {
+      if (err) {
+        next(err);
+      }
+      return collection.findOne({
+        metadata: {
+          observation: req.params.id
+        }
+      }, function(err, doc) {
+        var gridStore;
+        if (err) {
+          next(err);
+        }
+        if (doc) {
+          gridStore = new mongoose.mongo.GridStore(db, doc._id, "w", {
+            root: prefix
+          });
+          return gridStore.open(function(err, gridStore) {
+            return gridStore.unlink(function(err, file) {
+              if (err) {
+                next(err);
+              }
+              return next();
+            });
+          });
+        } else {
+          return next();
+        }
+      });
+    });
+  };
+
+  controller.set('deleteFileMiddleware', deleteFileMiddleware);
 
   controller.put("/:observationId/file", binaryBodyParser, function(req, res, next) {
     var db, grid;
@@ -78,35 +115,8 @@
     });
   });
 
-  controller['delete']("/:observationId/file", function(req, res, next) {
-    var db;
-    db = getDb();
-    return db.collection("" + prefix + ".files", function(err, collection) {
-      if (err) {
-        next(err);
-      }
-      return collection.findOne({
-        metadata: {
-          observation: req.params.observationId
-        }
-      }, function(err, doc) {
-        var gridStore;
-        if (err) {
-          next(err);
-        }
-        gridStore = new mongoose.mongo.GridStore(db, doc._id, "w", {
-          root: prefix
-        });
-        return gridStore.open(function(err, gridStore) {
-          return gridStore.unlink(function(err, file) {
-            if (err) {
-              next(err);
-            }
-            return res.send(200);
-          });
-        });
-      });
-    });
+  controller['delete']("/:id/file", deleteFileMiddleware, function(req, res, next) {
+    return res.send(200);
   });
 
 }).call(this);

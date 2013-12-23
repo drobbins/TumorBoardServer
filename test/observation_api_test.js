@@ -20,7 +20,7 @@
     patientUrl = "" + Help.url + "/patients";
     observationUrl = "" + Help.url + "/observations";
     return describe('CRUD', function() {
-      var observation, originalFile, patient, patient2, patient3, testFilePath;
+      var observation, observation2, originalFile, patient, patient2, patient3, testFilePath;
       patient = {
         mrn: '123ABC',
         name: 'Testing McPatient',
@@ -39,6 +39,10 @@
       observation = {
         type: 'Foundation Medicine Report',
         file: 'AKD934-FMR.pdf'
+      };
+      observation2 = {
+        type: 'Wash U Report',
+        value: '1234'
       };
       testFilePath = 'test/TestFile.pdf';
       originalFile = fs.readFileSync(testFilePath);
@@ -155,7 +159,7 @@
         };
         return request.get("" + observationUrl + "/" + observation._id + "/file", callback);
       });
-      return it('Delete', function(done) {
+      it('Delete', function(done) {
         return request({
           url: "" + observationUrl + "/" + observation._id,
           method: 'DELETE',
@@ -164,6 +168,42 @@
           should.not.exist(err);
           resp.statusCode.should.eql(200);
           return done();
+        });
+      });
+      return it('Delete File if Observation Deleted', function(done) {
+        observation2.patient = patient._id;
+        return request({
+          url: observationUrl,
+          method: 'POST',
+          json: observation2
+        }, function(err, resp, body) {
+          var url;
+          should.not.exist(err);
+          resp.statusCode.should.eql(201);
+          body.should.have.property('type', observation2.type);
+          body.should.have.property('patient', observation2.patient);
+          body.should.have.property('value', observation2.value);
+          observation2._id = body._id;
+          url = "" + observationUrl + "/" + observation2._id + "/file";
+          return fs.createReadStream(testFilePath).pipe(request.put(url, function(err, resp, body) {
+            should.not.exist(err);
+            resp.statusCode.should.eql(201);
+            return request({
+              url: "" + observationUrl + "/" + observation2._id,
+              method: 'DELETE',
+              json: true
+            }, function(err, resp, body) {
+              var callback;
+              should.not.exist(err);
+              resp.statusCode.should.eql(200);
+              callback = function(err, resp, body) {
+                should.not.exist(err);
+                resp.statusCode.should.eql(404);
+                return done();
+              };
+              return request.get("" + observationUrl + "/" + observation2._id + "/file", callback);
+            });
+          }));
         });
       });
     });
