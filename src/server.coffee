@@ -79,7 +79,7 @@ app.listen = (args...) ->
 
   # Initalize MongoDB Connection
     switch mongoose.connection.readyState
-        when 0, 3 then mongoose.connect (app.get 'mongoUrl') or 'mongodb://localhost/tb'
+        when 0, 3 then mongoose.connect (app.get 'mongoUrl') or 'mongodb://tb:tb@troup.mongohq.com:10061/TumorBoards'
 
   # Initialize HTTP Server
     server = http.createServer app

@@ -119,7 +119,7 @@ describe 'Tumor Board Server', () ->
                 url: 'http://localhost:8888/secure'
                 method: 'GET'
                 headers:
-                    'authorization': "Basic #{help.btoa("test:test")}"
+                    'authorization': "Basic #{help.btoa("tb:tb")}"
                 (err, resp, body) ->
                     should.not.exist err
                     resp.statusCode.should.equal 200

@@ -126,7 +126,7 @@
     switch (mongoose.connection.readyState) {
       case 0:
       case 3:
-        mongoose.connect((app.get('mongoUrl')) || 'mongodb://localhost/tb');
+        mongoose.connect((app.get('mongoUrl')) || 'mongodb://tb:tb@troup.mongohq.com:10061/TumorBoards');
     }
     server = http.createServer(app);
     app.set('__server', server);

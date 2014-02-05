@@ -140,7 +140,7 @@
           url: 'http://localhost:8888/secure',
           method: 'GET',
           headers: {
-            'authorization': "Basic " + (help.btoa("test:test"))
+            'authorization': "Basic " + (help.btoa("tb:tb"))
           }
         }, function(err, resp, body) {
           should.not.exist(err);

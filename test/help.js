@@ -5,7 +5,7 @@
 
   server = require('../dist/server');
 
-  mongoUrl = 'mongodb://tb:tb@127.0.0.1/tboard_test';
+  mongoUrl = 'mongodb://tb:tb@troup.mongohq.com:10061/TumorBoards';
 
   btoa = function(str) {
     return (new Buffer(str, "ascii")).toString("base64");
