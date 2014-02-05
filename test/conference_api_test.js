@@ -1,5 +1,5 @@
 (function() {
-  var Help, request, should;
+  var Help, req, request, should;
 
   Help = require('./help');
 
@@ -7,9 +7,16 @@
 
   request = require('request');
 
+  req = {};
+
   describe('Conference API', function() {
     var conferenceUrl, patientUrl;
     before(function(done) {
+      req = request.defaults({
+        headers: {
+          'authorization': Help.authorization
+        }
+      });
       return Help.init(done);
     });
     after(function(done) {
@@ -39,7 +46,7 @@
         name: "Molecular Tumor Conference"
       };
       before(function(done) {
-        return request({
+        return req({
           url: patientUrl,
           method: 'POST',
           json: [patient, patient2, patient3]
@@ -53,7 +60,7 @@
       });
       it('Create', function(done) {
         conference.patients = [patient._id, patient2._id, patient3._it];
-        return request({
+        return req({
           url: conferenceUrl,
           method: 'POST',
           json: conference
@@ -72,7 +79,7 @@
             $elemMatch: patient2._id
           }
         });
-        return request({
+        return req({
           url: "" + conferenceUrl + "/" + conference._id + "?populate=patients",
           method: 'GET',
           json: true
@@ -86,7 +93,7 @@
       });
       it('Update', function(done) {
         conference.name = "Multidisciplinary TB";
-        return request({
+        return req({
           url: "" + conferenceUrl + "/" + conference._id,
           method: 'PUT',
           json: {
@@ -99,12 +106,12 @@
         });
       });
       return it('Delete', function(done) {
-        return request({
+        return req({
           url: "" + conferenceUrl + "/" + conference._id,
           method: 'DELETE'
         }, function(err, resp, body) {
           should.not.exist(err);
-          return request({
+          return req({
             url: conferenceUrl,
             method: 'GET',
             json: true

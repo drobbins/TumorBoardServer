@@ -1,5 +1,5 @@
 (function() {
-  var app, baucis, controller, corser, express, http, mongoose, observationController, observationFiles,
+  var app, auth, authenticate, baucis, controller, corser, express, http, mongoose, observationController, observationFiles,
     __slice = [].slice;
 
   express = require('express');
@@ -12,6 +12,8 @@
 
   corser = require('corser');
 
+  auth = require('basic-auth');
+
   module.exports = app = express();
 
   app.use(corser.create({
@@ -19,8 +21,32 @@
     methods: corser.simpleMethods.concat(["PUT", "DELETE"])
   }));
 
+  authenticate = function(req, res, next) {
+    var unauthenticated, user;
+    unauthenticated = function() {
+      res.setHeader("WWW-Authenticate", "Basic realm=\"TumorBoardServer\"");
+      return res.send(401, "Unauthorized");
+    };
+    user = auth(req);
+    if (!user) {
+      return unauthenticated();
+    } else {
+      return mongoose.connection.db.authenticate(user.name, user.pass, function(err, result) {
+        if (err !== null || result === false) {
+          return unauthenticated();
+        } else {
+          return next();
+        }
+      });
+    }
+  };
+
   app.get("/hello", function(req, res) {
     return res.end("Hello World");
+  });
+
+  app.get("/secure", authenticate, function(req, res) {
+    return res.end("Authorized");
   });
 
   app.options('*', function(req, res) {
@@ -62,6 +88,8 @@
     swagger: true,
     version: "0.3.2"
   });
+
+  controller.use(authenticate);
 
   app.use("/api/v1", controller);
 

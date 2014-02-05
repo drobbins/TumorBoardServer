@@ -1,10 +1,14 @@
 Help = require './help'
 should = require 'should'
 request = require 'request'
+req = {}
 
 describe 'Patient API', () ->
 
     before (done) ->
+        req = request.defaults
+            headers:
+                'authorization': Help.authorization
         Help.init done
 
     after (done) ->
@@ -30,7 +34,7 @@ describe 'Patient API', () ->
         patientUrl = "#{Help.url}/patients"
 
         it 'Create (one)', (done) ->
-            request
+            req
                 url: patientUrl
                 method: 'POST'
                 json: patient
@@ -42,7 +46,7 @@ describe 'Patient API', () ->
                     done()
 
         it 'Create (multiple)', (done) ->
-            request
+            req
                 url: patientUrl
                 method: 'POST'
                 json: [patient2, patient3]
@@ -56,7 +60,7 @@ describe 'Patient API', () ->
                     done()
 
         it 'Read (all)', (done) ->
-            request
+            req
                 url: patientUrl
                 method: 'GET'
                 json: true
@@ -73,7 +77,7 @@ describe 'Patient API', () ->
         it 'Read (query)', (done) ->
             conditions = JSON.stringify
                 name: "The Other One"
-            request
+            req
                 url: patientUrl + "?conditions=#{conditions}"
                 method: 'GET'
                 json: true
@@ -87,13 +91,13 @@ describe 'Patient API', () ->
                     done()
 
         it 'Read (one by id)', (done) ->
-            request
+            req
                 url: patientUrl
                 method: 'GET'
                 json: true
                 (err, resp, body) ->
                     should.not.exist err
-                    request
+                    req
                         url: "#{patientUrl}/#{body[0]._id}"
                         method: 'GET'
                         json: true
@@ -107,13 +111,13 @@ describe 'Patient API', () ->
         it 'Update (new field)', (done) ->
             conditions = JSON.stringify
                 mrn: "123ABC"
-            request
+            req
                 url: patientUrl + "?conditions=#{conditions}"
                 method: 'GET'
                 json: true
                 (err, resp, body) ->
                     status = 'DECEASED'
-                    request
+                    req
                         url: "#{patientUrl}/#{body[0]._id}"
                         method: 'PUT'
                         json:
@@ -129,13 +133,13 @@ describe 'Patient API', () ->
         it 'Update (update field)', (done) ->
             conditions = JSON.stringify
                 mrn: "123ABC"
-            request
+            req
                 url: patientUrl + "?conditions=#{conditions}"
                 method: 'GET'
                 json: true
                 (err, resp, body) ->
                     newAge = 45
-                    request
+                    req
                         url: "#{patientUrl}/#{body[0]._id}"
                         method: 'PUT'
                         json:
@@ -150,12 +154,12 @@ describe 'Patient API', () ->
         it 'Delete (by condition)', (done) ->
             conditions = JSON.stringify
                 mrn: "123ABC"
-            request
+            req
                 url: patientUrl + "?conditions=#{conditions}"
                 method: 'DELETE'
                 json: true
                 (err, resp, body) ->
-                    request
+                    req
                         url: patientUrl
                         method: 'GET'
                         json: true

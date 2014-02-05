@@ -2,10 +2,14 @@ fs = require 'fs'
 Help = require './help'
 should = require 'should'
 request = require 'request'
+req = {}
 
 describe 'Observation API', () ->
 
     before (done) ->
+        req = request.defaults
+            headers:
+                'authorization': Help.authorization
         Help.init done
 
     after (done) ->
@@ -43,7 +47,7 @@ describe 'Observation API', () ->
         originalFile = fs.readFileSync testFilePath
 
         before (done) ->
-            request
+            req
                 url: patientUrl
                 method: 'POST'
                 json: [patient, patient2, patient3]
@@ -54,7 +58,7 @@ describe 'Observation API', () ->
 
         it 'Create', (done) ->
             observation.patient = patient3._id
-            request
+            req
                 url: observationUrl
                 method: 'POST'
                 json: observation
@@ -69,7 +73,7 @@ describe 'Observation API', () ->
         it 'Read (query)', (done) ->
             conditions = JSON.stringify
                 type: 'Foundation Medicine Report'
-            request
+            req
                 url: "#{observationUrl}?conditions=#{conditions}"
                 method: 'GET'
                 json: true
@@ -79,7 +83,7 @@ describe 'Observation API', () ->
                     done()
 
         it 'Read (by ID)', (done) ->
-            request
+            req
                 url: "#{observationUrl}/#{observation._id}"
                 method: 'GET'
                 json: true
@@ -92,7 +96,7 @@ describe 'Observation API', () ->
 
 
         it 'Update', (done) ->
-            request
+            req
                 url: "#{observationUrl}/#{observation._id}"
                 method: 'PUT'
                 json:
@@ -107,7 +111,7 @@ describe 'Observation API', () ->
 
         it 'Put File', (done) ->
             url = "#{observationUrl}/#{observation._id}/file"
-            fs.createReadStream(testFilePath).pipe request.put url, (err, resp, body) ->
+            fs.createReadStream(testFilePath).pipe req.put url, (err, resp, body) ->
                 should.not.exist err
                 resp.statusCode.should.eql 201
                 body = JSON.parse body
@@ -115,7 +119,7 @@ describe 'Observation API', () ->
                 done()
 
         it 'Get File', (done) ->
-            request.get("#{observationUrl}/#{observation._id}/file").pipe(file = fs.createWriteStream('temp.pdf'))
+            req.get("#{observationUrl}/#{observation._id}/file").pipe(file = fs.createWriteStream('temp.pdf'))
             file.on 'finish', () ->
                 writtenFile = fs.readFileSync 'temp.pdf'
                 writtenFile.length.should.eql originalFile.length
@@ -123,7 +127,7 @@ describe 'Observation API', () ->
                 done()
 
         it 'Delete File', (done) ->
-            request
+            req
                 url: "#{observationUrl}/#{observation._id}/file"
                 method: 'DELETE'
                 (err, resp, body) ->
@@ -136,10 +140,10 @@ describe 'Observation API', () ->
                 should.not.exist err
                 resp.statusCode.should.eql 404
                 done()
-            request.get("#{observationUrl}/#{observation._id}/file", callback)
+            req.get("#{observationUrl}/#{observation._id}/file", callback)
 
         it 'Delete', (done) ->
-            request
+            req
                 url: "#{observationUrl}/#{observation._id}"
                 method: 'DELETE'
                 json: true
@@ -150,7 +154,7 @@ describe 'Observation API', () ->
 
         it 'Delete File if Observation Deleted', (done) ->
             observation2.patient = patient._id
-            request                                                                                 # Create Observation
+            req                                                                                 # Create Observation
                 url: observationUrl
                 method: 'POST'
                 json: observation2
@@ -162,10 +166,10 @@ describe 'Observation API', () ->
                     body.should.have.property 'value', observation2.value
                     observation2._id = body._id
                     url = "#{observationUrl}/#{observation2._id}/file"
-                    fs.createReadStream(testFilePath).pipe request.put url, (err, resp, body) ->    # Upload File
+                    fs.createReadStream(testFilePath).pipe req.put url, (err, resp, body) ->    # Upload File
                         should.not.exist err
                         resp.statusCode.should.eql 201
-                        request                                                                     # Delete Observation
+                        req                                                                     # Delete Observation
                             url: "#{observationUrl}/#{observation2._id}"
                             method: 'DELETE'
                             json: true
@@ -176,4 +180,4 @@ describe 'Observation API', () ->
                                     should.not.exist err
                                     resp.statusCode.should.eql 404
                                     done()
-                                request.get("#{observationUrl}/#{observation2._id}/file", callback)  # File should not be
+                                req.get("#{observationUrl}/#{observation2._id}/file", callback)  # File should not be

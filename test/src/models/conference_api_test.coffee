@@ -1,10 +1,14 @@
 Help = require './help'
 should = require 'should'
 request = require 'request'
+req = {}
 
 describe 'Conference API', () ->
 
     before (done) ->
+        req = request.defaults
+            headers:
+                'authorization': Help.authorization
         Help.init done
 
     after (done) ->
@@ -36,7 +40,7 @@ describe 'Conference API', () ->
             name: "Molecular Tumor Conference"
 
         before (done) ->
-            request
+            req
                 url: patientUrl
                 method: 'POST'
                 json: [patient, patient2, patient3]
@@ -47,7 +51,7 @@ describe 'Conference API', () ->
 
         it 'Create', (done) ->
             conference.patients = [patient._id, patient2._id, patient3._it]
-            request
+            req
                 url: conferenceUrl
                 method: 'POST'
                 json: conference
@@ -62,7 +66,7 @@ describe 'Conference API', () ->
             conditions = JSON.stringify
                 pat:
                     $elemMatch: patient2._id
-            request
+            req
                 url: "#{conferenceUrl}/#{conference._id}?populate=patients"
                 method: 'GET'
                 json: true
@@ -75,7 +79,7 @@ describe 'Conference API', () ->
 
         it 'Update', (done) ->
             conference.name = "Multidisciplinary TB"
-            request
+            req
                 url: "#{conferenceUrl}/#{conference._id}"
                 method: 'PUT'
                 json:
@@ -86,12 +90,12 @@ describe 'Conference API', () ->
                     done()
 
         it 'Delete', (done) ->
-            request
+            req
                 url: "#{conferenceUrl}/#{conference._id}"
                 method: 'DELETE'
                 (err, resp, body) ->
                     should.not.exist err
-                    request
+                    req
                         url: conferenceUrl
                         method: 'GET'
                         json: true
