@@ -3,6 +3,7 @@ mongoose = require 'mongoose'
 baucis = require 'baucis'
 http = require 'http'
 corser = require 'corser'
+auth = require 'basic-auth'
 
 module.exports = app = express()
 
@@ -11,8 +12,25 @@ app.use corser.create
     requestHeaders:  corser.simpleRequestHeaders.concat ["X-Requested-With"]
     methods: corser.simpleMethods.concat ["PUT", "DELETE"]
 
+authenticate = (req, res, next) ->
+    unauthenticated = () ->
+        res.setHeader "WWW-Authenticate", "Basic realm=\"TumorBoardServer\""
+        res.send 401, "Unauthorized"
+    user = auth(req)
+    if not user
+        unauthenticated()
+    else
+        mongoose.connection.db.authenticate user.name, user.pass, (err, result) ->
+            if err isnt null or result is false
+                unauthenticated()
+            else
+                next()
+
+                #app.use authenticate
+
 # Static Routes
 app.get "/hello", (req, res) -> res.end "Hello World"
+app.get "/secure", authenticate, (req, res) -> res.end "Authorized"
 app.options '*', (req, res) ->
     # End Corser CORS preflight requests
     res.writeHead 204
@@ -37,6 +55,7 @@ baucis.rest singular: 'Conference'
 controller = baucis # Need to capture the controller here for use later
     swagger:true
     version: "0.3.2"
+controller.use authenticate # Require authentication for all API routes
 app.use "/api/v1", controller
 
 # Testability Helpers

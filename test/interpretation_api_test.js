@@ -1,5 +1,5 @@
 (function() {
-  var Help, request, should;
+  var Help, req, request, should;
 
   Help = require('./help');
 
@@ -7,9 +7,16 @@
 
   request = require('request');
 
+  req = {};
+
   describe('Interpretation API', function() {
     var interpretationUrl, observationUrl, patientUrl;
     before(function(done) {
+      req = request.defaults({
+        headers: {
+          'authorization': Help.authorization
+        }
+      });
       return Help.init(done);
     });
     after(function(done) {
@@ -48,7 +55,7 @@
         tags: ['FMR', 'Bone Marrow']
       };
       before(function(done) {
-        return request({
+        return req({
           url: patientUrl,
           method: 'POST',
           json: [patient, patient2, patient3]
@@ -59,7 +66,7 @@
           patient = body[0], patient2 = body[1], patient3 = body[2];
           observation.patient = patient3._id;
           observation2.patient = patient2._id;
-          return request({
+          return req({
             url: observationUrl,
             method: 'POST',
             json: [observation, observation2]
@@ -74,7 +81,7 @@
       });
       it('Create', function(done) {
         interpretation.observation = observation._id;
-        return request({
+        return req({
           url: interpretationUrl,
           method: 'POST',
           json: interpretation
@@ -91,7 +98,7 @@
         conditions = JSON.stringify({
           observation: observation._id
         });
-        return request({
+        return req({
           url: "" + interpretationUrl + "?conditions=" + conditions,
           method: 'GET',
           json: true
@@ -106,7 +113,7 @@
       });
       it('Update', function(done) {
         interpretation.tags.push('New');
-        return request({
+        return req({
           url: "" + interpretationUrl + "/" + interpretation._id,
           method: 'PUT',
           json: {
@@ -119,13 +126,13 @@
         });
       });
       return it('Delete', function(done) {
-        return request({
+        return req({
           url: "" + interpretationUrl + "/" + interpretation._id,
           method: 'DELETE',
           json: true
         }, function(err, resp, body) {
           should.not.exist(err);
-          return request({
+          return req({
             url: interpretationUrl,
             method: 'GET',
             json: true

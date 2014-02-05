@@ -3,6 +3,9 @@ server = require '../dist/server'
 
 mongoUrl = 'mongodb://tb:tb@127.0.0.1/tboard_test'
 
+btoa = (str) ->
+        (new Buffer(str, "ascii")).toString "base64"
+
 module.exports =
     init: (done) ->
         server.config
@@ -17,3 +20,5 @@ module.exports =
         mongoose.connect mongoUrl, callback
     stopMongo: (callback) ->
         mongoose.disconnect callback
+    authorization: "Basic #{btoa("tb:tb")}"
+    btoa: btoa

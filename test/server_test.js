@@ -1,11 +1,13 @@
 (function() {
-  var request, server, should;
+  var help, request, server, should;
 
   should = require('should');
 
   request = require('request');
 
   server = require('../dist/server');
+
+  help = require('./help');
 
   describe('Tumor Board Server', function() {
     describe('server.config', function() {
@@ -91,7 +93,7 @@
           return server.close(done);
         });
       });
-      return it('should appropriately support CORS', function(done) {
+      it('should appropriately support CORS', function(done) {
         server.config(options);
         server.listen();
         return request({
@@ -117,6 +119,34 @@
             resp.headers.should.have.property('access-control-allow-origin', '*');
             return server.close(done);
           });
+        });
+      });
+      it('should fail to access /secure without authentication', function(done) {
+        server.config(options);
+        server.listen();
+        return request({
+          url: 'http://localhost:8888/secure',
+          method: 'GET'
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.equal(401);
+          return server.close(done);
+        });
+      });
+      return it('should succeed to access /secure with authentication', function(done) {
+        server.config(options);
+        server.listen();
+        return request({
+          url: 'http://localhost:8888/secure',
+          method: 'GET',
+          headers: {
+            'authorization': "Basic " + (help.btoa("test:test"))
+          }
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.equal(200);
+          body.should.equal("Authorized");
+          return server.close(done);
         });
       });
     });

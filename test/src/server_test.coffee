@@ -1,6 +1,7 @@
 should = require 'should'
 request = require 'request'
 server = require '../dist/server'
+help = require './help'
 
 describe 'Tumor Board Server', () ->
 
@@ -99,3 +100,28 @@ describe 'Tumor Board Server', () ->
                             should.not.exist err
                             resp.headers.should.have.property 'access-control-allow-origin', '*'
                             server.close done
+
+        it 'should fail to access /secure without authentication', (done) ->
+            server.config options
+            server.listen()
+            request
+                url: 'http://localhost:8888/secure'
+                method: 'GET'
+                (err, resp, body) ->
+                    should.not.exist err
+                    resp.statusCode.should.equal 401
+                    server.close done
+
+        it 'should succeed to access /secure with authentication', (done) ->
+            server.config options
+            server.listen()
+            request
+                url: 'http://localhost:8888/secure'
+                method: 'GET'
+                headers:
+                    'authorization': "Basic #{help.btoa("test:test")}"
+                (err, resp, body) ->
+                    should.not.exist err
+                    resp.statusCode.should.equal 200
+                    body.should.equal "Authorized"
+                    server.close done

@@ -1,10 +1,14 @@
 Help = require './help'
 should = require 'should'
 request = require 'request'
+req = {} #placeholder for wrapped request
 
 describe 'Interpretation API', () ->
 
     before (done) ->
+        req = request.defaults
+            headers:
+                'authorization': Help.authorization
         Help.init done
 
     after (done) ->
@@ -44,7 +48,7 @@ describe 'Interpretation API', () ->
             tags: ['FMR', 'Bone Marrow']
 
         before (done) -> # Pre-load Patients and Observations
-            request
+            req
                 url: patientUrl
                 method: 'POST'
                 json: [patient, patient2, patient3]
@@ -53,7 +57,7 @@ describe 'Interpretation API', () ->
                     [patient, patient2, patient3] = body
                     observation.patient = patient3._id
                     observation2.patient = patient2._id
-                    request
+                    req
                         url: observationUrl
                         method: 'POST'
                         json: [observation, observation2]
@@ -64,7 +68,7 @@ describe 'Interpretation API', () ->
 
         it 'Create', (done) ->
             interpretation.observation = observation._id
-            request
+            req
                 url: interpretationUrl
                 method: 'POST'
                 json: interpretation
@@ -78,7 +82,7 @@ describe 'Interpretation API', () ->
         it 'Read (query by observation id)', (done) ->
             conditions = JSON.stringify
                 observation: observation._id
-            request
+            req
                 url: "#{interpretationUrl}?conditions=#{conditions}"
                 method: 'GET'
                 json: true
@@ -91,7 +95,7 @@ describe 'Interpretation API', () ->
 
         it 'Update', (done) ->
             interpretation.tags.push 'New'
-            request
+            req
                 url: "#{interpretationUrl}/#{interpretation._id}"
                 method: 'PUT'
                 json:
@@ -102,13 +106,13 @@ describe 'Interpretation API', () ->
                     done()
 
         it 'Delete', (done) ->
-            request
+            req
                 url: "#{interpretationUrl}/#{interpretation._id}"
                 method: 'DELETE'
                 json: true
                 (err, resp, body) ->
                     should.not.exist err
-                    request
+                    req
                         url: interpretationUrl
                         method: 'GET'
                         json: true

@@ -1,5 +1,5 @@
 (function() {
-  var Help, request, should;
+  var Help, req, request, should;
 
   Help = require('./help');
 
@@ -7,8 +7,15 @@
 
   request = require('request');
 
+  req = {};
+
   describe('Patient API', function() {
     before(function(done) {
+      req = request.defaults({
+        headers: {
+          'authorization': Help.authorization
+        }
+      });
       return Help.init(done);
     });
     after(function(done) {
@@ -33,7 +40,7 @@
       };
       patientUrl = "" + Help.url + "/patients";
       it('Create (one)', function(done) {
-        return request({
+        return req({
           url: patientUrl,
           method: 'POST',
           json: patient
@@ -46,7 +53,7 @@
         });
       });
       it('Create (multiple)', function(done) {
-        return request({
+        return req({
           url: patientUrl,
           method: 'POST',
           json: [patient2, patient3]
@@ -62,7 +69,7 @@
         });
       });
       it('Read (all)', function(done) {
-        return request({
+        return req({
           url: patientUrl,
           method: 'GET',
           json: true
@@ -83,7 +90,7 @@
         conditions = JSON.stringify({
           name: "The Other One"
         });
-        return request({
+        return req({
           url: patientUrl + ("?conditions=" + conditions),
           method: 'GET',
           json: true
@@ -99,13 +106,13 @@
         });
       });
       it('Read (one by id)', function(done) {
-        return request({
+        return req({
           url: patientUrl,
           method: 'GET',
           json: true
         }, function(err, resp, body) {
           should.not.exist(err);
-          return request({
+          return req({
             url: "" + patientUrl + "/" + body[0]._id,
             method: 'GET',
             json: true
@@ -123,14 +130,14 @@
         conditions = JSON.stringify({
           mrn: "123ABC"
         });
-        return request({
+        return req({
           url: patientUrl + ("?conditions=" + conditions),
           method: 'GET',
           json: true
         }, function(err, resp, body) {
           var status;
           status = 'DECEASED';
-          return request({
+          return req({
             url: "" + patientUrl + "/" + body[0]._id,
             method: 'PUT',
             json: {
@@ -151,14 +158,14 @@
         conditions = JSON.stringify({
           mrn: "123ABC"
         });
-        return request({
+        return req({
           url: patientUrl + ("?conditions=" + conditions),
           method: 'GET',
           json: true
         }, function(err, resp, body) {
           var newAge;
           newAge = 45;
-          return request({
+          return req({
             url: "" + patientUrl + "/" + body[0]._id,
             method: 'PUT',
             json: {
@@ -178,12 +185,12 @@
         conditions = JSON.stringify({
           mrn: "123ABC"
         });
-        return request({
+        return req({
           url: patientUrl + ("?conditions=" + conditions),
           method: 'DELETE',
           json: true
         }, function(err, resp, body) {
-          return request({
+          return req({
             url: patientUrl,
             method: 'GET',
             json: true

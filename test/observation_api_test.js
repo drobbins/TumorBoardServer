@@ -1,5 +1,5 @@
 (function() {
-  var Help, fs, request, should;
+  var Help, fs, req, request, should;
 
   fs = require('fs');
 
@@ -9,9 +9,16 @@
 
   request = require('request');
 
+  req = {};
+
   describe('Observation API', function() {
     var observationUrl, patientUrl;
     before(function(done) {
+      req = request.defaults({
+        headers: {
+          'authorization': Help.authorization
+        }
+      });
       return Help.init(done);
     });
     after(function(done) {
@@ -47,7 +54,7 @@
       testFilePath = 'test/TestFile.pdf';
       originalFile = fs.readFileSync(testFilePath);
       before(function(done) {
-        return request({
+        return req({
           url: patientUrl,
           method: 'POST',
           json: [patient, patient2, patient3]
@@ -61,7 +68,7 @@
       });
       it('Create', function(done) {
         observation.patient = patient3._id;
-        return request({
+        return req({
           url: observationUrl,
           method: 'POST',
           json: observation
@@ -79,7 +86,7 @@
         conditions = JSON.stringify({
           type: 'Foundation Medicine Report'
         });
-        return request({
+        return req({
           url: "" + observationUrl + "?conditions=" + conditions,
           method: 'GET',
           json: true
@@ -90,7 +97,7 @@
         });
       });
       it('Read (by ID)', function(done) {
-        return request({
+        return req({
           url: "" + observationUrl + "/" + observation._id,
           method: 'GET',
           json: true
@@ -103,7 +110,7 @@
         });
       });
       it('Update', function(done) {
-        return request({
+        return req({
           url: "" + observationUrl + "/" + observation._id,
           method: 'PUT',
           json: {
@@ -121,7 +128,7 @@
       it('Put File', function(done) {
         var url;
         url = "" + observationUrl + "/" + observation._id + "/file";
-        return fs.createReadStream(testFilePath).pipe(request.put(url, function(err, resp, body) {
+        return fs.createReadStream(testFilePath).pipe(req.put(url, function(err, resp, body) {
           should.not.exist(err);
           resp.statusCode.should.eql(201);
           body = JSON.parse(body);
@@ -131,7 +138,7 @@
       });
       it('Get File', function(done) {
         var file;
-        request.get("" + observationUrl + "/" + observation._id + "/file").pipe(file = fs.createWriteStream('temp.pdf'));
+        req.get("" + observationUrl + "/" + observation._id + "/file").pipe(file = fs.createWriteStream('temp.pdf'));
         return file.on('finish', function() {
           var writtenFile;
           writtenFile = fs.readFileSync('temp.pdf');
@@ -141,7 +148,7 @@
         });
       });
       it('Delete File', function(done) {
-        return request({
+        return req({
           url: "" + observationUrl + "/" + observation._id + "/file",
           method: 'DELETE'
         }, function(err, resp, body) {
@@ -157,10 +164,10 @@
           resp.statusCode.should.eql(404);
           return done();
         };
-        return request.get("" + observationUrl + "/" + observation._id + "/file", callback);
+        return req.get("" + observationUrl + "/" + observation._id + "/file", callback);
       });
       it('Delete', function(done) {
-        return request({
+        return req({
           url: "" + observationUrl + "/" + observation._id,
           method: 'DELETE',
           json: true
@@ -172,7 +179,7 @@
       });
       return it('Delete File if Observation Deleted', function(done) {
         observation2.patient = patient._id;
-        return request({
+        return req({
           url: observationUrl,
           method: 'POST',
           json: observation2
@@ -185,10 +192,10 @@
           body.should.have.property('value', observation2.value);
           observation2._id = body._id;
           url = "" + observationUrl + "/" + observation2._id + "/file";
-          return fs.createReadStream(testFilePath).pipe(request.put(url, function(err, resp, body) {
+          return fs.createReadStream(testFilePath).pipe(req.put(url, function(err, resp, body) {
             should.not.exist(err);
             resp.statusCode.should.eql(201);
-            return request({
+            return req({
               url: "" + observationUrl + "/" + observation2._id,
               method: 'DELETE',
               json: true
@@ -201,7 +208,7 @@
                 resp.statusCode.should.eql(404);
                 return done();
               };
-              return request.get("" + observationUrl + "/" + observation2._id + "/file", callback);
+              return req.get("" + observationUrl + "/" + observation2._id + "/file", callback);
             });
           }));
         });
