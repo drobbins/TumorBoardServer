@@ -1,6 +1,7 @@
 express = require 'express'
 mongoose = require 'mongoose'
 baucis = require 'baucis'
+swagger = require 'baucis-swagger'
 http = require 'http'
 corser = require 'corser'
 auth = require 'basic-auth'
@@ -59,7 +60,6 @@ conferenceController.use authenticate
 controller = baucis # Need to capture the controller here for use later
     swagger:true
     version: "1.0.2"
-app.use "/api/v1", controller
 
 # Testability Helpers
 app.set '__options', {}
@@ -79,6 +79,8 @@ app.listen = (args...) ->
     if app.get('prefix')
         app.use app.get('prefix'),app.router
         app.use "#{app.get 'prefix'}/api/v1", controller
+    else
+        app.use "/api/v1", controller
 
   # Initalize MongoDB Connection
     switch mongoose.connection.readyState
