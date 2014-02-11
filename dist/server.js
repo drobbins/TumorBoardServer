@@ -17,7 +17,7 @@
   module.exports = app = express();
 
   app.use(corser.create({
-    requestHeaders: corser.simpleRequestHeaders.concat(["X-Requested-With"]),
+    requestHeaders: corser.simpleRequestHeaders.concat(["X-Requested-With", "Authorization"]),
     methods: corser.simpleMethods.concat(["PUT", "DELETE"])
   }));
 
@@ -86,7 +86,7 @@
 
   controller = baucis({
     swagger: true,
-    version: "0.3.2"
+    version: "1.0.1"
   });
 
   controller.use(authenticate);

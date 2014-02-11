@@ -9,7 +9,7 @@ module.exports = app = express()
 
 # Middleware
 app.use corser.create
-    requestHeaders:  corser.simpleRequestHeaders.concat ["X-Requested-With"]
+    requestHeaders:  corser.simpleRequestHeaders.concat ["X-Requested-With", "Authorization"]
     methods: corser.simpleMethods.concat ["PUT", "DELETE"]
 
 authenticate = (req, res, next) ->
@@ -54,7 +54,7 @@ baucis.rest singular: 'Conference'
 
 controller = baucis # Need to capture the controller here for use later
     swagger:true
-    version: "0.3.2"
+    version: "1.0.1"
 controller.use authenticate # Require authentication for all API routes
 app.use "/api/v1", controller
 

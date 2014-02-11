@@ -101,13 +101,14 @@
           method: "OPTIONS",
           headers: {
             'origin': 'example.com',
-            'accept-control-request-headers': 'x-requested-with',
+            'accept-control-request-headers': 'x-requested-with, accept, authorization',
             'access-control-request-method': 'GET'
           }
         }, function(err, resp, body) {
           should.not.exist(err);
           resp.statusCode.should.equal(204);
           resp.headers.should.have.property('access-control-allow-headers');
+          resp.headers.should.have.property('access-control-allow-origin');
           return request({
             url: 'http://localhost:8888/api/v1/api-docs',
             headers: {
