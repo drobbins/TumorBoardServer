@@ -86,7 +86,7 @@
 
   controller = baucis({
     swagger: true,
-    version: "0.3.2"
+    version: "1.0.1"
   });
 
   controller.use(authenticate);

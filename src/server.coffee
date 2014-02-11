@@ -54,7 +54,7 @@ baucis.rest singular: 'Conference'
 
 controller = baucis # Need to capture the controller here for use later
     swagger:true
-    version: "0.3.2"
+    version: "1.0.1"
 controller.use authenticate # Require authentication for all API routes
 app.use "/api/v1", controller
 
