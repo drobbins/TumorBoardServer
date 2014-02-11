@@ -94,7 +94,7 @@
 
   controller = baucis({
     swagger: true,
-    version: "1.0.1"
+    version: "1.0.2"
   });
 
   app.use("/api/v1", controller);

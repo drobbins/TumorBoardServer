@@ -58,7 +58,7 @@ conferenceController.use authenticate
 
 controller = baucis # Need to capture the controller here for use later
     swagger:true
-    version: "1.0.1"
+    version: "1.0.2"
 app.use "/api/v1", controller
 
 # Testability Helpers
