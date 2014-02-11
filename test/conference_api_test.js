@@ -58,6 +58,17 @@
           return done();
         });
       });
+      it('Requires Auth', function(done) {
+        return request({
+          url: conferenceUrl,
+          method: 'GET',
+          json: true
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.equal(401);
+          return done();
+        });
+      });
       it('Create', function(done) {
         conference.patients = [patient._id, patient2._id, patient3._it];
         return req({

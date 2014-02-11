@@ -66,6 +66,17 @@
           return done();
         });
       });
+      it('Requires Auth', function(done) {
+        return request({
+          url: observationUrl,
+          method: 'GET',
+          json: true
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.equal(401);
+          return done();
+        });
+      });
       it('Create', function(done) {
         observation.patient = patient3._id;
         return req({

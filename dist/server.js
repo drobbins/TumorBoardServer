@@ -1,5 +1,5 @@
 (function() {
-  var app, auth, authenticate, baucis, controller, corser, express, http, mongoose, observationController, observationFiles,
+  var app, auth, authenticate, baucis, conferenceController, controller, corser, express, http, interpretationController, mongoose, observationController, observationFiles, patientController,
     __slice = [].slice;
 
   express = require('express');
@@ -56,15 +56,19 @@
 
   require('./patient');
 
-  baucis.rest({
+  patientController = baucis.rest({
     singular: 'Patient'
   });
+
+  patientController.use(authenticate);
 
   require('./observation');
 
   observationController = baucis.rest({
     singular: 'Observation'
   });
+
+  observationController.use(authenticate);
 
   observationFiles = require('./observationFiles');
 
@@ -74,22 +78,24 @@
 
   require('./interpretation');
 
-  baucis.rest({
+  interpretationController = baucis.rest({
     singular: 'Interpretation'
   });
 
+  interpretationController.use(authenticate);
+
   require('./conference');
 
-  baucis.rest({
+  conferenceController = baucis.rest({
     singular: 'Conference'
   });
+
+  conferenceController.use(authenticate);
 
   controller = baucis({
     swagger: true,
     version: "1.0.1"
   });
-
-  controller.use(authenticate);
 
   app.use("/api/v1", controller);
 

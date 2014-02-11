@@ -38,24 +38,27 @@ app.options '*', (req, res) ->
 
 # Model Routes
 require './patient'
-baucis.rest singular: 'Patient'
+patientController = baucis.rest singular: 'Patient'
+patientController.use authenticate
 
 require './observation'
-observationController = baucis.rest singular: 'Observation' # Capture observation controller to add file-uploads subcontroller
+observationController = baucis.rest singular: 'Observation'
+observationController.use authenticate
 observationFiles = require './observationFiles'
 observationController.use observationFiles # Add file-uploads subcontroller
 observationController.request 'del', observationFiles.get 'deleteFileMiddleware'
 
 require './interpretation'
-baucis.rest singular: 'Interpretation'
+interpretationController = baucis.rest singular: 'Interpretation'
+interpretationController.use authenticate
 
 require './conference'
-baucis.rest singular: 'Conference'
+conferenceController = baucis.rest singular: 'Conference'
+conferenceController.use authenticate
 
 controller = baucis # Need to capture the controller here for use later
     swagger:true
     version: "1.0.1"
-controller.use authenticate # Require authentication for all API routes
 app.use "/api/v1", controller
 
 # Testability Helpers

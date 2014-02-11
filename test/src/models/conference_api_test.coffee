@@ -49,6 +49,16 @@ describe 'Conference API', () ->
                     [patient, patient2, patient3] = body
                     done()
 
+        it 'Requires Auth', (done) ->
+            request
+                url: conferenceUrl
+                method: 'GET'
+                json: true
+                (err, resp, body) ->
+                    should.not.exist err
+                    resp.statusCode.should.equal 401
+                    done()
+
         it 'Create', (done) ->
             conference.patients = [patient._id, patient2._id, patient3._it]
             req
