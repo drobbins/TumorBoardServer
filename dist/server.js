@@ -1,5 +1,5 @@
 (function() {
-  var app, auth, authenticate, baucis, conferenceController, controller, corser, express, http, interpretationController, mongoose, observationController, observationFiles, patientController,
+  var app, auth, authenticate, baucis, conferenceController, controller, corser, express, http, interpretationController, mongoose, observationController, observationFiles, patientController, swagger,
     __slice = [].slice;
 
   express = require('express');
@@ -7,6 +7,8 @@
   mongoose = require('mongoose');
 
   baucis = require('baucis');
+
+  swagger = require('baucis-swagger');
 
   http = require('http');
 
@@ -94,10 +96,8 @@
 
   controller = baucis({
     swagger: true,
-    version: "1.0.2"
+    version: "1.0.3"
   });
-
-  app.use("/api/v1", controller);
 
   app.set('__options', {});
 
@@ -128,6 +128,8 @@
     if (app.get('prefix')) {
       app.use(app.get('prefix'), app.router);
       app.use("" + (app.get('prefix')) + "/api/v1", controller);
+    } else {
+      app.use("/api/v1", controller);
     }
     switch (mongoose.connection.readyState) {
       case 0:
