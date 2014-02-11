@@ -17,7 +17,7 @@
   module.exports = app = express();
 
   app.use(corser.create({
-    requestHeaders: corser.simpleRequestHeaders.concat(["X-Requested-With"]),
+    requestHeaders: corser.simpleRequestHeaders.concat(["X-Requested-With", "Authorization"]),
     methods: corser.simpleMethods.concat(["PUT", "DELETE"])
   }));
 
