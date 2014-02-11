@@ -39,6 +39,17 @@
         age: 19
       };
       patientUrl = "" + Help.url + "/patients";
+      it('Requires Auth', function(done) {
+        return request({
+          url: patientUrl,
+          method: 'GET',
+          json: true
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.equal(401);
+          return done();
+        });
+      });
       it('Create (one)', function(done) {
         return req({
           url: patientUrl,

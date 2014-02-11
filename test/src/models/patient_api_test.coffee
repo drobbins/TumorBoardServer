@@ -33,6 +33,16 @@ describe 'Patient API', () ->
 
         patientUrl = "#{Help.url}/patients"
 
+        it 'Requires Auth', (done) ->
+            request
+                url: patientUrl
+                method: 'GET'
+                json: true
+                (err, resp, body) ->
+                    should.not.exist err
+                    resp.statusCode.should.equal 401
+                    done()
+
         it 'Create (one)', (done) ->
             req
                 url: patientUrl

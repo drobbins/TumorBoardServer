@@ -79,6 +79,17 @@
           });
         });
       });
+      it('Requires Auth', function(done) {
+        return request({
+          url: interpretationUrl,
+          method: 'GET',
+          json: true
+        }, function(err, resp, body) {
+          should.not.exist(err);
+          resp.statusCode.should.equal(401);
+          return done();
+        });
+      });
       it('Create', function(done) {
         interpretation.observation = observation._id;
         return req({

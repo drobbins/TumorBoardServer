@@ -66,6 +66,16 @@ describe 'Interpretation API', () ->
                             [observation, observation2] = body
                             done()
 
+        it 'Requires Auth', (done) ->
+            request
+                url: interpretationUrl
+                method: 'GET'
+                json: true
+                (err, resp, body) ->
+                    should.not.exist err
+                    resp.statusCode.should.equal 401
+                    done()
+
         it 'Create', (done) ->
             interpretation.observation = observation._id
             req
